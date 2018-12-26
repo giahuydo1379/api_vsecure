@@ -19,6 +19,7 @@ class APILoginController extends Controller
         }
         $credentials = $request->only('email', 'password');
         try {
+
             if (!$token = JWTAuth::attempt($credentials)) {
                 return response()->json(['error' => 'invalid_credentials'], 401);
             }
