@@ -18,6 +18,7 @@ class APILoginController extends Controller
             return response()->json($validator->errors());
         }
         $credentials = $request->only('email', 'password');
+//        dd($token = JWTAuth::attempt($credentials));
         try {
 
             if (!$token = JWTAuth::attempt($credentials)) {

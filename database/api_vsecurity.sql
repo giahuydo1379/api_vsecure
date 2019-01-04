@@ -16,6 +16,64 @@
 CREATE DATABASE IF NOT EXISTS `api_vsecurity` /*!40100 DEFAULT CHARACTER SET utf8 */;
 USE `api_vsecurity`;
 
+-- Dumping structure for table api_vsecurity.customers
+CREATE TABLE IF NOT EXISTS `customers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(50) DEFAULT NULL,
+  `nick_name` varchar(50) DEFAULT NULL,
+  `password` varchar(250) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `is_deleted` tinyint(2) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+
+-- Dumping data for table api_vsecurity.customers: ~1 rows (approximately)
+/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
+INSERT INTO `customers` (`id`, `email`, `nick_name`, `password`, `created_at`, `updated_at`, `is_deleted`) VALUES
+	(6, 'huy1@gmail.com', 'huy', '$2y$10$Syv6pt/yCJJnHgXoEr7yQeJ7MfjWxX8ArQMYIpZLVTq1dTicKXFYC', '2019-01-04 09:35:44', '2019-01-04 09:35:44', 0);
+/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.devices
+CREATE TABLE IF NOT EXISTS `devices` (
+  `id` int(11) NOT NULL,
+  `name` varchar(50) DEFAULT NULL,
+  `password` varchar(50) DEFAULT NULL,
+  `location` varchar(250) DEFAULT NULL,
+  `mac` varchar(250) DEFAULT NULL,
+  `version` float DEFAULT NULL,
+  `volume` int(11) DEFAULT '3' COMMENT 'Level 1 - 3',
+  `arm_delay` int(11) DEFAULT '5' COMMENT '[ 5 - 255 ]',
+  `alarm_delay` int(11) DEFAULT '5' COMMENT '[ 5 - 255 ]',
+  `alarm_duration` int(11) DEFAULT '60' COMMENT '[ 5 - 300 ]',
+  `self_test_mode` tinyint(2) DEFAULT '0' COMMENT '0: normal, 1: power saving, 2: fast',
+  `timing_arm_disarm` int(11) DEFAULT NULL,
+  `is_arm` tinyint(2) DEFAULT NULL COMMENT '0: disarm, 1: arm',
+  `is_home` tinyint(2) DEFAULT NULL COMMENT '0: home, 1: away',
+  `is_alarm` tinyint(2) DEFAULT NULL COMMENT '0: alarm, 1: doorbell',
+  `door_status` tinyint(2) DEFAULT NULL COMMENT '0: close, 1: open',
+  `battery_capacity_reamaining` tinyint(5) DEFAULT NULL COMMENT '0: <=25%, 1:<=50%, 2:<=75%, 3: <=100%',
+  `is_deleted` tinyint(5) DEFAULT NULL COMMENT '0: còn, 1:xóa',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Thiết bị';
+
+-- Dumping data for table api_vsecurity.devices: ~0 rows (approximately)
+/*!40000 ALTER TABLE `devices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `devices` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.devices_users
+CREATE TABLE IF NOT EXISTS `devices_users` (
+  `id` int(11) NOT NULL,
+  `id_device` int(11) DEFAULT NULL,
+  `id_user` int(11) DEFAULT NULL,
+  `is_owner` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table api_vsecurity.devices_users: ~0 rows (approximately)
+/*!40000 ALTER TABLE `devices_users` DISABLE KEYS */;
+/*!40000 ALTER TABLE `devices_users` ENABLE KEYS */;
+
 -- Dumping structure for table api_vsecurity.migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -28,6 +86,105 @@ CREATE TABLE IF NOT EXISTS `migrations` (
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 
+-- Dumping structure for table api_vsecurity.password_resets
+CREATE TABLE IF NOT EXISTS `password_resets` (
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table api_vsecurity.password_resets: ~0 rows (approximately)
+/*!40000 ALTER TABLE `password_resets` DISABLE KEYS */;
+/*!40000 ALTER TABLE `password_resets` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.permissions
+CREATE TABLE IF NOT EXISTS `permissions` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table api_vsecurity.permissions: ~4 rows (approximately)
+/*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
+INSERT INTO `permissions` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
+	(1, 'role-read', 'Display Role Listing', 'Only Can See List Of Role', NULL, NULL),
+	(2, 'role-create', 'Create Role', 'Create new role', NULL, NULL),
+	(3, 'role-edit', 'Edit Role', 'Edit Role', NULL, NULL),
+	(4, 'role-delete', 'Delete Role', 'Delete Role', NULL, NULL);
+/*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.permission_role
+CREATE TABLE IF NOT EXISTS `permission_role` (
+  `permission_id` int(10) unsigned NOT NULL,
+  `role_id` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table api_vsecurity.permission_role: ~5 rows (approximately)
+/*!40000 ALTER TABLE `permission_role` DISABLE KEYS */;
+INSERT INTO `permission_role` (`permission_id`, `role_id`) VALUES
+	(1, 1),
+	(2, 1),
+	(3, 1),
+	(4, 1),
+	(1, 3);
+/*!40000 ALTER TABLE `permission_role` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.roles
+CREATE TABLE IF NOT EXISTS `roles` (
+  `id` int(10) unsigned NOT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table api_vsecurity.roles: ~3 rows (approximately)
+/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
+INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
+	(1, 'admin', 'Admin', 'Almost do everything', '2018-12-26 09:57:37', '2018-12-26 09:57:37'),
+	(2, 'user', 'User', 'Only can do the thing that admn allow to do', '2018-12-26 09:57:49', '2018-12-26 09:57:49'),
+	(3, 'manager', 'Manager', 'Only can read list of role', '2018-12-27 01:40:39', '2018-12-27 01:40:39');
+/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.role_user
+CREATE TABLE IF NOT EXISTS `role_user` (
+  `user_id` int(10) unsigned NOT NULL,
+  `role_id` int(10) unsigned NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table api_vsecurity.role_user: ~3 rows (approximately)
+/*!40000 ALTER TABLE `role_user` DISABLE KEYS */;
+INSERT INTO `role_user` (`user_id`, `role_id`) VALUES
+	(1, 1),
+	(2, 2),
+	(3, 3);
+/*!40000 ALTER TABLE `role_user` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.setting_notification_devices
+CREATE TABLE IF NOT EXISTS `setting_notification_devices` (
+  `id` int(11) NOT NULL,
+  `id_device` int(11) NOT NULL,
+  `arm_opening_push_switch` tinyint(2) DEFAULT NULL,
+  `disarm_opening_push_switch` tinyint(2) DEFAULT NULL,
+  `close_push_switch` tinyint(2) DEFAULT NULL,
+  `password_change_push_switch` tinyint(2) DEFAULT NULL,
+  `arm_push_switch` tinyint(2) DEFAULT NULL,
+  `disarm_push_switch` tinyint(2) DEFAULT NULL,
+  `mode_change_push_switch` tinyint(2) DEFAULT NULL,
+  `boot_push_switch` tinyint(2) DEFAULT NULL,
+  `low_power_push_switch` tinyint(2) DEFAULT NULL,
+  `offline_push_switch` tinyint(2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table api_vsecurity.setting_notification_devices: ~0 rows (approximately)
+/*!40000 ALTER TABLE `setting_notification_devices` DISABLE KEYS */;
+/*!40000 ALTER TABLE `setting_notification_devices` ENABLE KEYS */;
+
 -- Dumping structure for table api_vsecurity.users
 CREATE TABLE IF NOT EXISTS `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -38,12 +195,14 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.users: ~1 rows (approximately)
+-- Dumping data for table api_vsecurity.users: ~3 rows (approximately)
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'huy', 'huy1@gmail.com', '$2y$10$P5q1z7K/IWRI3JbF0XeodOWHhrCPQKnNRbLt2DaIGrCyrkpH1Z0tK', NULL, '2018-12-26 07:39:07', '2018-12-26 07:39:07');
+	(1, 'admin', 'admin@gmail.com', '$2y$10$EjZImFxfhokoadOrqkzeJOQkAz6Q4OuaE36T9/Z9zWz3eAddrXx1u', 'DVfEKTns6DBIAUlYZOmNSN9fmrdZJhlSqXVablb8HG5Afj5S114KqIA3BTje', '2018-12-26 10:09:10', '2018-12-26 10:09:10'),
+	(2, 'user', 'user1@gmail.com', '$2y$10$ZEMoAUI4aVsFUeLNnx2YJe1JSeH08FndtIQp1YAnrX4cllwGtcRba', '0Xkcb3StsHGK8hsvgBF5xvIhomXRVRVpUdxTeYUk6IzhYO5xouZGgU7d6pEL', '2018-12-26 10:09:24', '2018-12-26 10:09:24'),
+	(3, 'user2', 'user2@gmail.com', '$2y$10$jKp3rN27NwS9RIfQedl0Jux6z4kncdL8ze/49vcVVMUuiDWohVVe.', 'EhxkGjMI3WP8oQSnAZMldozD1CWTU0uEKPH1awTzbnUBuFQt3zTF5lifKTX2', '2018-12-27 01:41:39', '2018-12-27 01:41:39');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
