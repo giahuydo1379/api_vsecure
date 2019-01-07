@@ -17,12 +17,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('user/register', 'APIRegisterController@register');
-Route::post('user/login', 'APILoginController@login');
-Route::middleware('jwt.auth')->get('users', function (Request $request) {
+Route::post('customer/register', 'APIRegisterController@register');
+Route::post('customer/login', 'APILoginController@login');
+Route::middleware('jwt.auth')->get('customers', function (Request $request) {
     return JWTAuth::toUser();
 //    $user = JWTAuth::toUser($request->token);
 //
 //    return response()->json(compact('token', 'user'));
 //    return auth()->user();
 });
+Route::get('devices', 'DeviceController@devices');
+Route::get('device/customer/1', 'DeviceController@deviceUser');
+
+Route::get('customers', 'CustomerController@customers');
+Route::get('customer/device/1', 'CustomerController@customersDevice');
