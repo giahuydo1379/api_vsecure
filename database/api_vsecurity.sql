@@ -34,8 +34,23 @@ INSERT INTO `customers` (`id`, `email`, `nick_name`, `password`, `created_at`, `
 	(6, 'huy1@gmail.com', 'huy', '$2y$10$Syv6pt/yCJJnHgXoEr7yQeJ7MfjWxX8ArQMYIpZLVTq1dTicKXFYC', '2019-01-04 09:35:44', '2019-01-04 09:35:44', 0);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 
--- Dumping structure for table api_vsecurity.devices
-CREATE TABLE IF NOT EXISTS `devices` (
+-- Dumping structure for table api_vsecurity.device_token
+CREATE TABLE IF NOT EXISTS `device_token` (
+  `id` int(11) NOT NULL,
+  `dooralarm _id` int(11) DEFAULT NULL,
+  `customer_id` int(11) DEFAULT NULL,
+  `device_token` varchar(250) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- Dumping data for table api_vsecurity.device_token: ~0 rows (approximately)
+/*!40000 ALTER TABLE `device_token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `device_token` ENABLE KEYS */;
+
+-- Dumping structure for table api_vsecurity.dooralarm
+CREATE TABLE IF NOT EXISTS `dooralarm` (
   `id` int(11) NOT NULL,
   `name` varchar(50) DEFAULT NULL,
   `password` varchar(50) DEFAULT NULL,
@@ -55,24 +70,24 @@ CREATE TABLE IF NOT EXISTS `devices` (
   `battery_capacity_reamaining` tinyint(5) DEFAULT NULL COMMENT '0: <=25%, 1:<=50%, 2:<=75%, 3: <=100%',
   `is_deleted` tinyint(5) DEFAULT NULL COMMENT '0: còn, 1:xóa',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Thiết bị';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Thiết bị trống trộm';
 
--- Dumping data for table api_vsecurity.devices: ~0 rows (approximately)
-/*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-/*!40000 ALTER TABLE `devices` ENABLE KEYS */;
+-- Dumping data for table api_vsecurity.dooralarm: ~0 rows (approximately)
+/*!40000 ALTER TABLE `dooralarm` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dooralarm` ENABLE KEYS */;
 
--- Dumping structure for table api_vsecurity.devices_users
-CREATE TABLE IF NOT EXISTS `devices_users` (
+-- Dumping structure for table api_vsecurity.dooralarm _customer
+CREATE TABLE IF NOT EXISTS `dooralarm _customer` (
   `id` int(11) NOT NULL,
-  `id_device` int(11) DEFAULT NULL,
+  `id_dooralarm` int(11) DEFAULT NULL,
   `id_user` int(11) DEFAULT NULL,
   `is_owner` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table api_vsecurity.devices_users: ~0 rows (approximately)
-/*!40000 ALTER TABLE `devices_users` DISABLE KEYS */;
-/*!40000 ALTER TABLE `devices_users` ENABLE KEYS */;
+-- Dumping data for table api_vsecurity.dooralarm _customer: ~0 rows (approximately)
+/*!40000 ALTER TABLE `dooralarm _customer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `dooralarm _customer` ENABLE KEYS */;
 
 -- Dumping structure for table api_vsecurity.migrations
 CREATE TABLE IF NOT EXISTS `migrations` (
@@ -164,10 +179,10 @@ INSERT INTO `role_user` (`user_id`, `role_id`) VALUES
 	(3, 3);
 /*!40000 ALTER TABLE `role_user` ENABLE KEYS */;
 
--- Dumping structure for table api_vsecurity.setting_notification_devices
-CREATE TABLE IF NOT EXISTS `setting_notification_devices` (
+-- Dumping structure for table api_vsecurity.setting_notification_dooralarm
+CREATE TABLE IF NOT EXISTS `setting_notification_dooralarm` (
   `id` int(11) NOT NULL,
-  `id_device` int(11) NOT NULL,
+  `id_dooralarm` int(11) NOT NULL,
   `arm_opening_push_switch` tinyint(2) DEFAULT NULL,
   `disarm_opening_push_switch` tinyint(2) DEFAULT NULL,
   `close_push_switch` tinyint(2) DEFAULT NULL,
@@ -181,9 +196,9 @@ CREATE TABLE IF NOT EXISTS `setting_notification_devices` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- Dumping data for table api_vsecurity.setting_notification_devices: ~0 rows (approximately)
-/*!40000 ALTER TABLE `setting_notification_devices` DISABLE KEYS */;
-/*!40000 ALTER TABLE `setting_notification_devices` ENABLE KEYS */;
+-- Dumping data for table api_vsecurity.setting_notification_dooralarm: ~0 rows (approximately)
+/*!40000 ALTER TABLE `setting_notification_dooralarm` DISABLE KEYS */;
+/*!40000 ALTER TABLE `setting_notification_dooralarm` ENABLE KEYS */;
 
 -- Dumping structure for table api_vsecurity.users
 CREATE TABLE IF NOT EXISTS `users` (
