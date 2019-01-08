@@ -45,6 +45,11 @@ return [
             'driver' => 'token',
             'provider' => 'users',
         ],
+
+        'api-users' => [
+            'driver' => 'token',
+            'provider' => 'user',
+        ],
     ],
 
     /*
@@ -70,10 +75,17 @@ return [
 //            'model' => App\User::class,
 //        ],
 
-         'users' => [
-             'driver' => 'database',
-             'table' => 'customers',
-         ],
+//        'users' => [
+//            'driver' => 'database',
+//            'table' => 'customers',
+//        ],
+
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => \App\Http\Models\User::class,
+            'table' => 'users',
+        ],
+
     ],
 
     /*

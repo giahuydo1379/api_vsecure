@@ -1,225 +1,363 @@
--- --------------------------------------------------------
--- Host:                         127.0.0.1
--- Server version:               10.1.34-MariaDB - mariadb.org binary distribution
--- Server OS:                    Win32
--- HeidiSQL Version:             9.5.0.5196
--- --------------------------------------------------------
+-- phpMyAdmin SQL Dump
+-- version 4.8.3
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: Jan 08, 2019 at 07:52 AM
+-- Server version: 10.1.37-MariaDB
+-- PHP Version: 7.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET NAMES utf8 */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `api_vsecurity`
+--
 
--- Dumping database structure for api_vsecurity
-CREATE DATABASE IF NOT EXISTS `api_vsecurity` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `api_vsecurity`;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.customers
-CREATE TABLE IF NOT EXISTS `customers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `email` varchar(50) DEFAULT NULL,
-  `nick_name` varchar(50) DEFAULT NULL,
-  `password` varchar(250) DEFAULT NULL,
+--
+-- Table structure for table `customers`
+--
+
+CREATE TABLE `customers` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nick_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  `is_deleted` tinyint(2) DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
-
--- Dumping data for table api_vsecurity.customers: ~1 rows (approximately)
-/*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`id`, `email`, `nick_name`, `password`, `created_at`, `updated_at`, `is_deleted`) VALUES
-	(6, 'huy1@gmail.com', 'huy', '$2y$10$Syv6pt/yCJJnHgXoEr7yQeJ7MfjWxX8ArQMYIpZLVTq1dTicKXFYC', '2019-01-04 09:35:44', '2019-01-04 09:35:44', 0);
-/*!40000 ALTER TABLE `customers` ENABLE KEYS */;
-
--- Dumping structure for table api_vsecurity.device_token
-CREATE TABLE IF NOT EXISTS `device_token` (
-  `id` int(11) NOT NULL,
-  `dooralarm _id` int(11) DEFAULT NULL,
-  `customer_id` int(11) DEFAULT NULL,
-  `device_token` varchar(250) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Dumping data for table api_vsecurity.device_token: ~0 rows (approximately)
-/*!40000 ALTER TABLE `device_token` DISABLE KEYS */;
-/*!40000 ALTER TABLE `device_token` ENABLE KEYS */;
-
--- Dumping structure for table api_vsecurity.dooralarm
-CREATE TABLE IF NOT EXISTS `dooralarm` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) DEFAULT NULL,
-  `password` varchar(50) DEFAULT NULL,
-  `location` varchar(250) DEFAULT NULL,
-  `mac` varchar(250) DEFAULT NULL,
-  `version` float DEFAULT NULL,
-  `volume` int(11) DEFAULT '3' COMMENT 'Level 1 - 3',
-  `arm_delay` int(11) DEFAULT '5' COMMENT '[ 5 - 255 ]',
-  `alarm_delay` int(11) DEFAULT '5' COMMENT '[ 5 - 255 ]',
-  `alarm_duration` int(11) DEFAULT '60' COMMENT '[ 5 - 300 ]',
-  `self_test_mode` tinyint(2) DEFAULT '0' COMMENT '0: normal, 1: power saving, 2: fast',
-  `timing_arm_disarm` int(11) DEFAULT NULL,
-  `is_arm` tinyint(2) DEFAULT NULL COMMENT '0: disarm, 1: arm',
-  `is_home` tinyint(2) DEFAULT NULL COMMENT '0: home, 1: away',
-  `is_alarm` tinyint(2) DEFAULT NULL COMMENT '0: alarm, 1: doorbell',
-  `door_status` tinyint(2) DEFAULT NULL COMMENT '0: close, 1: open',
-  `battery_capacity_reamaining` tinyint(5) DEFAULT NULL COMMENT '0: <=25%, 1:<=50%, 2:<=75%, 3: <=100%',
-  `is_deleted` tinyint(5) DEFAULT NULL COMMENT '0: còn, 1:xóa',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Thiết bị trống trộm';
-
--- Dumping data for table api_vsecurity.dooralarm: ~0 rows (approximately)
-/*!40000 ALTER TABLE `dooralarm` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dooralarm` ENABLE KEYS */;
-
--- Dumping structure for table api_vsecurity.dooralarm _customer
-CREATE TABLE IF NOT EXISTS `dooralarm _customer` (
-  `id` int(11) NOT NULL,
-  `id_dooralarm` int(11) DEFAULT NULL,
-  `id_user` int(11) DEFAULT NULL,
-  `is_owner` tinyint(4) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
--- Dumping data for table api_vsecurity.dooralarm _customer: ~0 rows (approximately)
-/*!40000 ALTER TABLE `dooralarm _customer` DISABLE KEYS */;
-/*!40000 ALTER TABLE `dooralarm _customer` ENABLE KEYS */;
-
--- Dumping structure for table api_vsecurity.migrations
-CREATE TABLE IF NOT EXISTS `migrations` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `batch` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.migrations: ~0 rows (approximately)
-/*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
-/*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.password_resets
-CREATE TABLE IF NOT EXISTS `password_resets` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+--
+-- Table structure for table `devices`
+--
+
+CREATE TABLE `devices` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `door_alarm_id` int(10) UNSIGNED NOT NULL,
+  `customer_id` int(10) UNSIGNED NOT NULL,
+  `token` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `door_alarm`
+--
+
+CREATE TABLE `door_alarm` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `location` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `mac` varchar(17) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `version` double(8,2) DEFAULT NULL,
+  `volume` int(11) NOT NULL DEFAULT '3' COMMENT 'level 1-3',
+  `arm_delay` int(11) NOT NULL DEFAULT '5' COMMENT '5-255',
+  `alarm_delay` int(11) NOT NULL DEFAULT '5' COMMENT '5-255',
+  `alarm_duration` int(11) NOT NULL DEFAULT '60' COMMENT '5-300',
+  `self_test_mode` enum('0','1','2') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0' COMMENT '0: normal, 1: power saving, 2: fast',
+  `timing_arm_disarm` int(11) DEFAULT NULL,
+  `is_arm` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0: dis arm,1: arm',
+  `is_home` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0: home, 1: away',
+  `is_alarm` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0: alarm,1: door bell',
+  `door_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0: close, 1: open',
+  `battery_capacity_remaining` enum('0','1','2','3') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '3' COMMENT '0: <= 25%,...',
+  `is_deleted` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `batch` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `migrations`
+--
+
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
+(19, '2014_10_12_000000_create_users_table', 1),
+(20, '2014_10_12_100000_create_password_resets_table', 1),
+(21, '2019_01_07_000000_create_customers_table', 1),
+(22, '2019_01_07_000010_create_door_alarm_table', 1),
+(23, '2019_01_07_093646_create_devices_table', 1),
+(24, '2019_01_07_095446_create_setting_notification_door_alarm_table', 1),
+(25, '2019_01_08_042943_entrust_setup_tables', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_resets`
+--
+
+CREATE TABLE `password_resets` (
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.password_resets: ~0 rows (approximately)
-/*!40000 ALTER TABLE `password_resets` DISABLE KEYS */;
-/*!40000 ALTER TABLE `password_resets` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.permissions
-CREATE TABLE IF NOT EXISTS `permissions` (
-  `id` int(10) unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `display_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+--
+-- Table structure for table `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.permissions: ~4 rows (approximately)
-/*!40000 ALTER TABLE `permissions` DISABLE KEYS */;
-INSERT INTO `permissions` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
-	(1, 'role-read', 'Display Role Listing', 'Only Can See List Of Role', NULL, NULL),
-	(2, 'role-create', 'Create Role', 'Create new role', NULL, NULL),
-	(3, 'role-edit', 'Edit Role', 'Edit Role', NULL, NULL),
-	(4, 'role-delete', 'Delete Role', 'Delete Role', NULL, NULL);
-/*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.permission_role
-CREATE TABLE IF NOT EXISTS `permission_role` (
-  `permission_id` int(10) unsigned NOT NULL,
-  `role_id` int(10) unsigned NOT NULL
+--
+-- Table structure for table `permission_role`
+--
+
+CREATE TABLE `permission_role` (
+  `permission_id` int(10) UNSIGNED NOT NULL,
+  `role_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.permission_role: ~5 rows (approximately)
-/*!40000 ALTER TABLE `permission_role` DISABLE KEYS */;
-INSERT INTO `permission_role` (`permission_id`, `role_id`) VALUES
-	(1, 1),
-	(2, 1),
-	(3, 1),
-	(4, 1),
-	(1, 3);
-/*!40000 ALTER TABLE `permission_role` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.roles
-CREATE TABLE IF NOT EXISTS `roles` (
-  `id` int(10) unsigned NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `display_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+--
+-- Table structure for table `roles`
+--
+
+CREATE TABLE `roles` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `display_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.roles: ~3 rows (approximately)
-/*!40000 ALTER TABLE `roles` DISABLE KEYS */;
-INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `created_at`, `updated_at`) VALUES
-	(1, 'admin', 'Admin', 'Almost do everything', '2018-12-26 09:57:37', '2018-12-26 09:57:37'),
-	(2, 'user', 'User', 'Only can do the thing that admn allow to do', '2018-12-26 09:57:49', '2018-12-26 09:57:49'),
-	(3, 'manager', 'Manager', 'Only can read list of role', '2018-12-27 01:40:39', '2018-12-27 01:40:39');
-/*!40000 ALTER TABLE `roles` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.role_user
-CREATE TABLE IF NOT EXISTS `role_user` (
-  `user_id` int(10) unsigned NOT NULL,
-  `role_id` int(10) unsigned NOT NULL
+--
+-- Table structure for table `role_user`
+--
+
+CREATE TABLE `role_user` (
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `role_id` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.role_user: ~3 rows (approximately)
-/*!40000 ALTER TABLE `role_user` DISABLE KEYS */;
-INSERT INTO `role_user` (`user_id`, `role_id`) VALUES
-	(1, 1),
-	(2, 2),
-	(3, 3);
-/*!40000 ALTER TABLE `role_user` ENABLE KEYS */;
+-- --------------------------------------------------------
 
--- Dumping structure for table api_vsecurity.setting_notification_dooralarm
-CREATE TABLE IF NOT EXISTS `setting_notification_dooralarm` (
-  `id` int(11) NOT NULL,
-  `id_dooralarm` int(11) NOT NULL,
-  `arm_opening_push_switch` tinyint(2) DEFAULT NULL,
-  `disarm_opening_push_switch` tinyint(2) DEFAULT NULL,
-  `close_push_switch` tinyint(2) DEFAULT NULL,
-  `password_change_push_switch` tinyint(2) DEFAULT NULL,
-  `arm_push_switch` tinyint(2) DEFAULT NULL,
-  `disarm_push_switch` tinyint(2) DEFAULT NULL,
-  `mode_change_push_switch` tinyint(2) DEFAULT NULL,
-  `boot_push_switch` tinyint(2) DEFAULT NULL,
-  `low_power_push_switch` tinyint(2) DEFAULT NULL,
-  `offline_push_switch` tinyint(2) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+--
+-- Table structure for table `setting_notification_door_alarm`
+--
 
--- Dumping data for table api_vsecurity.setting_notification_dooralarm: ~0 rows (approximately)
-/*!40000 ALTER TABLE `setting_notification_dooralarm` DISABLE KEYS */;
-/*!40000 ALTER TABLE `setting_notification_dooralarm` ENABLE KEYS */;
+CREATE TABLE `setting_notification_door_alarm` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `arm_opening_push_switch` tinyint(1) NOT NULL DEFAULT '0',
+  `arm_closed_push_switch` tinyint(1) NOT NULL DEFAULT '0',
+  `pass_change_push_switch` tinyint(1) DEFAULT NULL,
+  `mode_change_push_switch` tinyint(1) DEFAULT NULL,
+  `boot_push_switch` tinyint(1) DEFAULT NULL,
+  `low_battery_push_switch` tinyint(1) DEFAULT NULL,
+  `offline_push_switch` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping structure for table api_vsecurity.users
-CREATE TABLE IF NOT EXISTS `users` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table api_vsecurity.users: ~3 rows (approximately)
-/*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `remember_token`, `created_at`, `updated_at`) VALUES
-	(1, 'admin', 'admin@gmail.com', '$2y$10$EjZImFxfhokoadOrqkzeJOQkAz6Q4OuaE36T9/Z9zWz3eAddrXx1u', 'DVfEKTns6DBIAUlYZOmNSN9fmrdZJhlSqXVablb8HG5Afj5S114KqIA3BTje', '2018-12-26 10:09:10', '2018-12-26 10:09:10'),
-	(2, 'user', 'user1@gmail.com', '$2y$10$ZEMoAUI4aVsFUeLNnx2YJe1JSeH08FndtIQp1YAnrX4cllwGtcRba', '0Xkcb3StsHGK8hsvgBF5xvIhomXRVRVpUdxTeYUk6IzhYO5xouZGgU7d6pEL', '2018-12-26 10:09:24', '2018-12-26 10:09:24'),
-	(3, 'user2', 'user2@gmail.com', '$2y$10$jKp3rN27NwS9RIfQedl0Jux6z4kncdL8ze/49vcVVMUuiDWohVVe.', 'EhxkGjMI3WP8oQSnAZMldozD1CWTU0uEKPH1awTzbnUBuFQt3zTF5lifKTX2', '2018-12-27 01:41:39', '2018-12-27 01:41:39');
-/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+--
+-- Indexes for dumped tables
+--
 
-/*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
-/*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;
+--
+-- Indexes for table `customers`
+--
+ALTER TABLE `customers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `customers_email_unique` (`email`);
+
+--
+-- Indexes for table `devices`
+--
+ALTER TABLE `devices`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `devices_door_alarm_id_foreign` (`door_alarm_id`),
+  ADD KEY `devices_customer_id_foreign` (`customer_id`);
+
+--
+-- Indexes for table `door_alarm`
+--
+ALTER TABLE `door_alarm`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `password_resets`
+--
+ALTER TABLE `password_resets`
+  ADD KEY `password_resets_email_index` (`email`);
+
+--
+-- Indexes for table `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_unique` (`name`);
+
+--
+-- Indexes for table `permission_role`
+--
+ALTER TABLE `permission_role`
+  ADD PRIMARY KEY (`permission_id`,`role_id`),
+  ADD KEY `permission_role_role_id_foreign` (`role_id`);
+
+--
+-- Indexes for table `roles`
+--
+ALTER TABLE `roles`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `roles_name_unique` (`name`);
+
+--
+-- Indexes for table `role_user`
+--
+ALTER TABLE `role_user`
+  ADD PRIMARY KEY (`user_id`,`role_id`),
+  ADD KEY `role_user_role_id_foreign` (`role_id`);
+
+--
+-- Indexes for table `setting_notification_door_alarm`
+--
+ALTER TABLE `setting_notification_door_alarm`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `users_email_unique` (`email`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `customers`
+--
+ALTER TABLE `customers`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `devices`
+--
+ALTER TABLE `devices`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `door_alarm`
+--
+ALTER TABLE `door_alarm`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `setting_notification_door_alarm`
+--
+ALTER TABLE `setting_notification_door_alarm`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `devices`
+--
+ALTER TABLE `devices`
+  ADD CONSTRAINT `devices_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `devices_door_alarm_id_foreign` FOREIGN KEY (`door_alarm_id`) REFERENCES `door_alarm` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `permission_role`
+--
+ALTER TABLE `permission_role`
+  ADD CONSTRAINT `permission_role_permission_id_foreign` FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `permission_role_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `role_user`
+--
+ALTER TABLE `role_user`
+  ADD CONSTRAINT `role_user_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `role_user_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+COMMIT;
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
