@@ -27,6 +27,7 @@ return array(
     'App\\Http\\Models\\Permission' => $baseDir . '/app/Http/Models/Permission.php',
     'App\\Http\\Models\\Role' => $baseDir . '/app/Http/Models/Role.php',
     'App\\Http\\Models\\User' => $baseDir . '/app/Http/Models/User.php',
+    'App\\Http\\Requests\\UserRequest' => $baseDir . '/app/Http/Requests/UserRequest.php',
     'App\\Models\\Customer' => $baseDir . '/app/Http/Models/Customer.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',

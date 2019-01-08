@@ -381,6 +381,7 @@ class ComposerStaticInitaab9c0414e5e26463d24b20a0fc9a6ec
         'App\\Http\\Models\\Permission' => __DIR__ . '/../..' . '/app/Http/Models/Permission.php',
         'App\\Http\\Models\\Role' => __DIR__ . '/../..' . '/app/Http/Models/Role.php',
         'App\\Http\\Models\\User' => __DIR__ . '/../..' . '/app/Http/Models/User.php',
+        'App\\Http\\Requests\\UserRequest' => __DIR__ . '/../..' . '/app/Http/Requests/UserRequest.php',
         'App\\Models\\Customer' => __DIR__ . '/../..' . '/app/Http/Models/Customer.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
