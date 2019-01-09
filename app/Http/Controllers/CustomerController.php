@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
+use App\Http\Models\DoorAlarmCustomer;
+use App\Http\Models\Customer;
+use DB;
 class CustomerController extends Controller
 {
     public function customers()
@@ -87,5 +89,62 @@ class CustomerController extends Controller
         ];
         return response()->json($data, 200);
     }
+    public function insertDooAlarmCustomer(Request $request){
+
+       $result = array('status'=>'');
+       try {
+          $flight = new DoorAlarmCustomer;
+          $data= $request->all();
+
+          $email = $request -> email;
+
+          $idCustomer = Customer::where('email', $data['email'])->pluck('id')->toArray();
+
+          $data2 =[
+            'mac_device' => $request -> mac_device,
+            'id_customer' => $idCustomer[0]
+        ];
+
+        $result['data'] = $flight::create($data2);
+
+
+        $result['status'] = 200;
+    } catch(QueryException $e) {
+        $result['status'] = $e->getCode();
+        $result['errMsg'] = $e->getMessage();
+    }
+    return $result;
+}
+
+public function deviceListCustomer(Request $request){
+
+   $result = array('status'=>'');
+   try {
+    
+      $data= $request->all();
+
+      $email = $request -> email;
+
+  $idCustomer = Customer::where('email', $data['email'])->pluck('id')->toArray();
+
+
+    // $mac_device = DB::table('dooralarm_customer')
+    // -> select('mac_device')
+    // ->where('id_customer', $idCustomer[0])
+    // ->get();
+   $mac_device = DoorAlarmCustomer::where('id_customer', $idCustomer[0])->pluck('mac_device')->toArray();
+    // dd($mac_device);
+    $result['data'] = DB::table('dooralarm')
+    ->where('mac_device', $mac_device[0])
+    ->get();
+    $result['status'] = 200;
+} catch(QueryException $e) {
+    $result['status'] = $e->getCode();
+    $result['errMsg'] = $e->getMessage();
+}
+return $result;
+}
+
+
 
 }
