@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Customer;
+use App\Http\Models\Customer;
 use JWTAuth;
 use Validator;
 use Response;

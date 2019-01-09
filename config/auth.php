@@ -75,16 +75,16 @@ return [
 //            'model' => App\User::class,
 //        ],
 
-//        'users' => [
-//            'driver' => 'database',
-//            'table' => 'customers',
-//        ],
-
         'users' => [
-            'driver' => 'eloquent',
-            'model' => \App\Http\Models\User::class,
-            'table' => 'users',
+            'driver' => 'database',
+            'table' => 'customers',
         ],
+
+//        'users' => [
+//            'driver' => 'eloquent',
+//            'model' => \App\Http\Models\User::class,
+//            'table' => 'users',
+//        ],
 
     ],
 
