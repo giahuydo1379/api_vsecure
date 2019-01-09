@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Validator;
 use JWTAuth;
+use DB;
 
 class APILoginController extends Controller
 {
@@ -17,6 +18,8 @@ class APILoginController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors());
         }
+        $data = $request -> all();
+     
         $credentials = $request->only('email', 'password');
 //        dd($token = JWTAuth::attempt($credentials));
         try {
@@ -27,7 +30,17 @@ class APILoginController extends Controller
         } catch (JWTException $e) {
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
-
-        return response()->json(compact('token'));
+         $updateData = DB::table('customers')
+                        ->where('email', $data['email'])
+                        ->update([
+                            'token_notification' => $data['token_notification'],
+                        ]);
+        $response = [
+            'status' => '200',
+            'message' => 'login successful',
+            'token' => $token
+        ];
+        
+        return response()->json($response);
     }
 }
