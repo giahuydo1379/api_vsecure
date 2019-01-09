@@ -1,0 +1,4 @@
+
+ --add colum "token_notification" vào customers
+ALTER TABLE customers
+ ADD token_notification varchar(250) DEFAULT NULL
