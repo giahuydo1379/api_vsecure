@@ -28,7 +28,16 @@ class APIRegisterController extends Controller
         $customer = Customer::first();
 
         $token = JWTAuth::fromUser($customer);
+         $response = [
+            'status' => '200',
+            'data' => [
+                   'message' => 'register successful',
+                   'token' => $token
+            ]
+         
+        ];
+        return response()->json($response);
 
-        return Response::json(compact('token'));
+        // return Response::json(compact('token'));
     }
 }
