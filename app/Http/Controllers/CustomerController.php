@@ -116,7 +116,7 @@ class CustomerController extends Controller
     return $result;
 }
 
-public function deviceListCustomer(Request $request){
+    public function deviceListCustomer(Request $request){
 
    $result = array('status'=>'');
    try {
@@ -144,7 +144,20 @@ public function deviceListCustomer(Request $request){
 }
 return $result;
 }
+    public function customerByEmail(Request $request){
+        $email = $request -> email;
+        $customer = Customer::where("email", $email)->get();
+//        dd($customer);
+        $response = [
+            'status' => '200',
+            'data' => [
+                'customer' => $customer,
+            ]
 
+        ];
+
+        return response()->json($response);
+    }
 
 
 }

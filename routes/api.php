@@ -30,6 +30,7 @@ Route::get('devices', 'DeviceController@devices');
 Route::get('device/customer/1', 'DeviceController@deviceUser');
 
 Route::get('customers', 'CustomerController@customers');
+Route::get('customers-by-email', 'CustomerController@customerByEmail');
 Route::get('customer/device/1', 'CustomerController@customersDevice');
 Route::post('add/device-customer', 'CustomerController@insertDooAlarmCustomer');
 Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
