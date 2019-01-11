@@ -31,6 +31,7 @@ Route::get('device/customer/1', 'DeviceController@deviceUser');
 
 Route::get('customers', 'CustomerController@customers');
 Route::get('customers-by-email', 'CustomerController@customerByEmail');
+Route::post('delete/device-token-by-email', 'CustomerController@deleteDevicetokenByEmail');
 Route::get('customer/device/1', 'CustomerController@customersDevice');
 Route::post('add/device-customer', 'CustomerController@insertDooAlarmCustomer');
 Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
