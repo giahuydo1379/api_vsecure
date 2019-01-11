@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,4 +35,8 @@ Route::post('delete/device-token-by-email', 'CustomerController@deleteDevicetoke
 Route::get('customer/device/1', 'CustomerController@customersDevice');
 Route::post('add/device-customer', 'CustomerController@insertDooAlarmCustomer');
 Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
+
+Route::prefix('v1/customer')->group(function () {
+    Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
+});
 
