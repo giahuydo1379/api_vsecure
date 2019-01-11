@@ -33,7 +33,7 @@ class APILoginController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
 
-        $idCustomer = Customer::where('email', $data['email'])->pluck('id')->toArray();
+        $idCustomer = Customer::where('email', $data['email'])->where('is_deleted', 0)->pluck('id')->toArray();
 
         
          $insert = DB::table('device_token')->insert([

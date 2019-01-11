@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Models\DoorAlarmCustomer;
 use App\Http\Models\Customer;
+use Illuminate\Database\QueryException;
 use DB;
 
 class CustomerController extends Controller
@@ -131,11 +132,6 @@ class CustomerController extends Controller
 
             $idCustomer = Customer::where('email', $data['email'])->pluck('id')->toArray();
 
-
-            // $mac_device = DB::table('dooralarm_customer')
-            // -> select('mac_device')
-            // ->where('id_customer', $idCustomer[0])
-            // ->get();
             $mac_device = DoorAlarmCustomer::where('id_customer', $idCustomer[0])->pluck('mac_device')->toArray();
             // dd($mac_device);
             $result['data'] = DB::table('dooralarm')
@@ -151,36 +147,48 @@ class CustomerController extends Controller
 
     public function customerByEmail(Request $request)
     {
-        $email = $request->email;
-        $customer = Customer::where("email", $email)->get();
+        try {
+            $email = $request->email;
+            $customer = Customer::where("email", $email)->where('is_deleted', 0)->get();
 //        dd($customer);
-        $response = [
-            'status' => '200',
-            'data' => [
-                'customer' => $customer,
-            ]
+            $response = [
+                'status' => '200',
+                'data' => [
+                    'customer' => $customer,
+                ]
 
-        ];
-
-        return response()->json($response);
+            ];
+            return response()->json($response);
+        } catch (QueryException $e) {
+            $response['status'] = $e->getCode();
+            $response['errMsg'] = $e->getMessage();
+        }
+        return $response;
     }
 
     public function deleteDevicetokenByEmail(Request $request)
     {
-        $result = array('status' => '');
-        $data = $request->all();
-        $email = $request->email;
-        $device_token = $request->device_token;
-        $idCustomer = Customer::where('email', $email)->pluck('id')->toArray();
-        $reponse = DB::table('device_token')
-            ->where('customer_id', $idCustomer[0])
-            ->where('device_token', $device_token)
-            ->update([
-                'is_deleted' => 1,
-            ]);
-        if ($reponse) {
-            $result['status'] = 200;
-            $result['message'] = 'Xóa thành công';
+        try {
+            $result = array('status' => '');
+            $data = $request->all();
+            $email = $request->email;
+            $device_token = $request->device_token;
+            $idCustomer = Customer::where('email', $email)->where('is_deleted', 0)->pluck('id')->toArray();
+//        dd($data);
+            $reponse = DB::table('device_token')
+                ->where('customer_id', $idCustomer[0])
+                ->where('device_token', $device_token)
+                ->update([
+                    'is_deleted' => 1,
+                ]);
+            if ($reponse) {
+                $result['status'] = 200;
+                $result['message'] = 'Xóa thành công';
+            }
+
+        } catch (QueryException $e) {
+            $result['status'] = $e->getCode();
+            $result['errMsg'] = $e->getMessage();
         }
         return $result;
     }
