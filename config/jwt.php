@@ -144,8 +144,7 @@ return [
         |
         */
 
-        'jwt' => 'Tymon\JWTAuth\Providers\JWT\NamshiAdapter',
-
+        'jwt' => Tymon\JWTAuth\Providers\JWT\NamshiAdapter::class,
         /*
         |--------------------------------------------------------------------------
         | Authentication Provider
@@ -166,7 +165,7 @@ return [
         |
         */
 
-        'storage' => 'Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter',
+        'storage' => Tymon\JWTAuth\Providers\Storage\IlluminateCacheAdapter::class,
 
     ],
 
