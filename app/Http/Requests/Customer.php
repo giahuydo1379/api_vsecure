@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class DoorAlarm extends FormRequest
+class Customer extends FormRequest
 {
     private $ins = true;
 
@@ -30,12 +30,10 @@ class DoorAlarm extends FormRequest
         if ($this->ins)
             return [
                 'email' => 'required|email',
-                'mac' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
             ];
         else
             return [
-                'email' => 'required|email',
-                'device_token' => 'required',
+
             ];
     }
 
@@ -46,5 +44,4 @@ class DoorAlarm extends FormRequest
         $validator = Validator::make($request->all(), $this->rules());
         return $validator;
     }
-
 }

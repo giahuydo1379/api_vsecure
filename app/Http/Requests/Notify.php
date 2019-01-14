@@ -37,7 +37,8 @@ class Notify extends FormRequest
             ];
     }
 
-    public function checkValidate(Request $request, $ins = true){
+    public function checkValidate(Request $request, $ins = true)
+    {
         if (!$ins)
             $this->ins = false;
         $validator = Validator::make($request->all(), $this->rules());

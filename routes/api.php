@@ -44,6 +44,7 @@ Route::prefix('v1/device-token')->group(function () {
 
 });
 Route::prefix('v1')->group(function () {
-//    Route::apiResource('door-alarm', 'DoorAlarmController')->except(['destroy']);
+    Route::get('door-alarm/show', 'DoorAlarmController@index')->name('door-alarm.show-by-email');
+    Route::post('door-alarm/create', 'DoorAlarmController@store')->name('door-alarm.store');
     Route::delete('door-alarm/delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
 });
