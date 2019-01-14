@@ -86,4 +86,5 @@ class NotifyController extends Controller
         ];
         return $this->responseFormat(200, 'Success', $data);
     }
+
 }
