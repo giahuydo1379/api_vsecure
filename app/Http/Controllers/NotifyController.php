@@ -69,14 +69,14 @@ class NotifyController extends Controller
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
         $data = [
-            "1" => [
+            [
                 "id" => 1,
                 "nick_name" => "huy",
                 "action" => "action1",
                 "time_push" => "2019-01-04 09:35:44",
                 "model_device" => " device1",
             ],
-            "2" => [
+            [
                 "id" => 2,
                 "nick_name" => "huy",
                 "action" => "action2",

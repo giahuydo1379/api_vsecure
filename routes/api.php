@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -39,4 +40,10 @@ Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
 Route::prefix('v1/customer')->group(function () {
     Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
 });
+Route::prefix('v1/device-token')->group(function () {
 
+});
+Route::prefix('v1')->group(function () {
+//    Route::apiResource('door-alarm', 'DoorAlarmController')->except(['destroy']);
+    Route::delete('door-alarm/delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
+});
