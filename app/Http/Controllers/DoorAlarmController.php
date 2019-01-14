@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Models\Customer;
 use App\Http\Models\DeviceToken;
 use App\Http\Requests\Customer as CustomerRequest;
+use App\Http\Requests\DoorAlarm as DoorAlarmRequest;
 use App\Http\Models\DoorAlarm;
 use Illuminate\Http\Request;
 
@@ -102,8 +103,34 @@ class DoorAlarmController extends Controller
 //        $cusId = Customer::where(['email'=>$request->email,'is_deleted'=> 0])->pluck('id')->first();
 //        if (!$cusId)
 //            return $this->responseFormat(404, 'Not found');
-        $doorAlarm = new DoorAlarm();
-        $doorAlarm->fill($request->all());
+
+        $data = [
+            'dooralarm' => [
+                'id' => 1,
+                "MAC" => "DC4f22BABA7B",
+                "name" => "huy1",
+                "password" => "123123",
+                "location" => "123123sdas",
+                "version" => "1.0",
+                "volume" => "2",
+                "arm_delay" => "5s",
+                "alarm_delay" => "5s",
+                "alarm_duration" => "5s",
+                "self_test_mode" => "normal",
+                "battery_capacity_reamaining" => "50%",],
+            'customer' => [
+                "id" => 1,
+                "email" => "huy1@gmail.com",
+                "nick_name" => "huy",
+                "created_at" => "2019-01-04 09:35:44",
+                "updated_at" => "2019-01-04 09:35:44",
+                'is_deleted' => 0,
+            ],
+            'device_token' => 'abc',
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+        ];
+        return $this->responseFormat(200, 'Success', $data);
 
     }
 

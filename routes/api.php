@@ -39,9 +39,10 @@ Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
 
 Route::prefix('v1/customer')->group(function () {
     Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
+    Route::get('show', 'CustomerController@findBy')->name('customer.show-all-customer');
 });
 Route::prefix('v1/device-token')->group(function () {
-
+    Route::delete('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
 });
 Route::prefix('v1')->group(function () {
     Route::get('door-alarm/show', 'DoorAlarmController@index')->name('door-alarm.show-by-email');
