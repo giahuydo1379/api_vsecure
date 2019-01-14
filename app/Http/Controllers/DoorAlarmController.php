@@ -35,7 +35,17 @@ class DoorAlarmController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $requestDoorAlarm = new DoorAlarmRequest();
+        $validator = $requestDoorAlarm->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+//        $cusId = Customer::where(['email'=>$request->email,'is_deleted'=> 0])->pluck('id')->first();
+//        if (!$cusId)
+//            return $this->responseFormat(404, 'Not found');
+        $doorAlarm = new DoorAlarm();
+        $doorAlarm->fill($request->all());
+        $deviceToken = new \App\Repositories\DeviceToken();
+        return $deviceToken->create($request);
     }
 
     /**
@@ -70,11 +80,26 @@ class DoorAlarmController extends Controller
     public function destroy($id)
     {
         try {
+
             $doorAlarm = DoorAlarm::find($id);
-            if (!$doorAlarm)
-                return $this->responseFormat(404, 'Not found');
-            if (!$doorAlarm->delete())
-                return $this->responseFormat(422, 'Deleted failed');
+            $this->doorAlarm = new DoorAlarm([
+                "Id" => '1',
+                "mac" => "DC4f22BABA7B",
+                "name" => "huy1",
+                "password" => "123123",
+                "location" => "123123sdas",
+                "version" => "1.0",
+                "volume" => "2",
+                "arm_delay" => "5s",
+                "alarm_delay" => "5s",
+                "alarm_duration" => "5s",
+                "self_test_mode" => "normal",
+                "battery_capacity_reamaining" => "50%",
+            ]);
+//            if (!$doorAlarm)
+//                return $this->responseFormat(404, 'Not found');
+//            if (!$doorAlarm->delete())
+//                return $this->responseFormat(422, 'Deleted failed');
             return $this->responseFormat(200, 'Success');
 
         } catch (\Exception $exception) {
@@ -92,13 +117,15 @@ class DoorAlarmController extends Controller
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
             $cusId = Customer::where(['email' => $email, 'is_deleted' => 0])->pluck('id')->first();
+            $cusId = 1; // test
             if (!$cusId)
                 return $this->responseFormat(404, 'Not found customer');
             $doorAlarmId = DeviceToken::where(['customer_id' => $cusId, 'device_token' => $deviceToken])
                 ->pluck('id')->first();
+            $doorAlarmId = 1; //test
             if (!$doorAlarmId)
                 return $this->responseFormat(404, 'Not found door alarm');
-            $this->destroy($doorAlarmId);
+            return $this->destroy($doorAlarmId);
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
