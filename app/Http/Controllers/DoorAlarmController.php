@@ -64,6 +64,7 @@ class DoorAlarmController extends Controller
                     'is_alarm' => 0,
                     'door_status' => 1,
                     "battery_capacity_reamaining" => "50%",
+                    'active' => 0,
                 ],
                 [
                     "id" => 2,
@@ -82,6 +83,7 @@ class DoorAlarmController extends Controller
                     'is_alarm' => 0,
                     'door_status' => 1,
                     "battery_capacity_reamaining" => "50%",
+                    'active' => 0,
                 ]
             ]
         ];
