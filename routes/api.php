@@ -38,13 +38,20 @@ Route::post('add/device-customer', 'CustomerController@insertDooAlarmCustomer');
 Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
 
 Route::prefix('v1/customer')->group(function () {
+    Route::get('/','CustomerController@index')->name('customer.list-all');
+    Route::get('show', 'CustomerController@findBy')->name('customer.details');
+    Route::post('/edit','CustomerController@update')->name('customer.edit');
     Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
-});
-Route::prefix('v1/device-token')->group(function () {
 
 });
-Route::prefix('v1')->group(function () {
-    Route::get('door-alarm/show', 'DoorAlarmController@index')->name('door-alarm.show-by-email');
-    Route::post('door-alarm/create', 'DoorAlarmController@store')->name('door-alarm.store');
-    Route::delete('door-alarm/delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
+Route::prefix('v1/device-token')->group(function () {
+    Route::delete('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
+});
+Route::prefix('v1/door-alarm')->group(function () {
+    Route::get('/', 'DoorAlarmController@index')->name('door-alarm.show-all');
+    Route::get('show', 'DoorAlarmController@show')->name('door-alarm.show-by-email');
+    Route::get('/customer','DoorAlarmController@showCustomer')->name('door-alarm.show-all-customer');
+    Route::post('create', 'DoorAlarmController@store')->name('door-alarm.store');
+    Route::post('/edit', 'DoorAlarmController@update')->name('door-alarm.edit');
+    Route::delete('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
 });

@@ -6,10 +6,27 @@ use Illuminate\Http\Request;
 use App\Http\Models\DoorAlarmCustomer;
 use App\Http\Models\Customer;
 use Illuminate\Database\QueryException;
+use App\Http\Requests\Customer as CustomerRequest;
 use DB;
 
 class CustomerController extends Controller
 {
+    private  $data = [
+                [
+                    "id" => 1,
+                    "email" => "huy1@gmail.com",
+                    "nick_name" => "huy",
+                    "created_at" => "2019-01-04 09:35:44",
+                    "updated_at" => "2019-01-04 09:35:44"
+                    ],
+                [
+                    "id" => 2,
+                    "email" => "huy2@gmail.com",
+                    "nick_name" => "huy2",
+                    "created_at" => "2019-01-04 09:35:44",
+                    "updated_at" => "2019-01-04 09:35:44"
+                    ],
+             ];
     public function customers()
     {
         $data = [
@@ -32,6 +49,10 @@ class CustomerController extends Controller
             ]
         ];
         return response()->json($data, 200);
+    }
+
+    public function index(){
+        return $this->responseFormat(200,'Success',$this->data);
     }
 
     public function customersDevice()
@@ -83,8 +104,6 @@ class CustomerController extends Controller
                             "battery_capacity_reamaining" => "50%",
                         ]
                     ]
-
-
                 ]
 
             ]
@@ -200,9 +219,42 @@ class CustomerController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $email = $request->email;
+        $requestCus = new CustomerRequest();
+        $validator = $requestCus->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+//        $customer = Customer::where(['email' => $email, 'is_deleted' => 0]);
+        $data = [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+            'is_deleted' => 0,
+        ];
+        return $this->responseFormat(200, 'Success', $data);
+    }
+
+    public function findBy(Request $request)
+    {
+        $email = $request->email;
+        $requestCus = new CustomerRequest();
+        $validator = $requestCus->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+//        $customer = Customer::where(['email' => $email, 'is_deleted' => 0]);
+        $data = [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+            'is_deleted' => 0,
+        ];
+        return $this->responseFormat(200, 'Success', $data);
     }
 
 }
