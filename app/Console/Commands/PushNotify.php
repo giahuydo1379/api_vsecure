@@ -50,7 +50,7 @@ class PushNotify extends Command
         $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
-        $channel->queue_declare('hello', false, false, false, false);
+        $channel->queue_declare('door_alarm', false, false, false, false);
 
 
         $callback = function ($msg) {
@@ -134,7 +134,7 @@ class PushNotify extends Command
             echo " [x] Done\n";
         };
 
-        $channel->basic_consume('hello', '', false, true, false, false, $callback);
+        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
         echo " [x] Waiting...\n";
         while (count($channel->callbacks)) {
             $channel->wait();
