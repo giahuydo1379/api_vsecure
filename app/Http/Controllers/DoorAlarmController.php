@@ -8,6 +8,7 @@ use App\Http\Requests\Customer as CustomerRequest;
 use App\Http\Requests\DoorAlarm as DoorAlarmRequest;
 use App\Http\Models\DoorAlarm;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class DoorAlarmController extends Controller
 {
@@ -23,64 +24,10 @@ class DoorAlarmController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-
-//        $email = $request->email;
-//        $requestCus = new CustomerRequest();
-//        $validator = $requestCus->checkValidate($request);
-//        if ($validator->fails())
-//            return $this->responseFormat(422, $validator->errors());
-//        $cusId = Customer::where(['email' => $email, 'is_deleted' => 0])->pluck('id')->first();
-//        if (!$cusId)
-//            return $this->responseFormat(404, 'Not found customer');
-//        $doorAlarmId = DeviceToken::where(['customer_id' => $cusId])->pluck('dooralarm_id');
-//        if (!$doorAlarmId)
-//            return $this->responseFormat(404, 'Not found door alarm');
-//        $doorAlarm = DoorAlarm::find($doorAlarmId);
-//        if (!$doorAlarm)
-//            return $this->responseFormat(404, 'Empty');
-        $doorAlarmData = [
-            [
-                "id" => 1,
-                "MAC" => "DC:4f:22:BA:BA:7B",
-                "name" => "huy1",
-                "password" => "123123",
-                "location" => "123123sdas",
-                "version" => "1.0",
-                "volume" => "2",
-                "arm_delay" => "5s",
-                "alarm_delay" => "5s",
-                "alarm_duration" => "5s",
-                "self_test_mode" => "normal",
-                "is_arm" => 1,
-                'is_home' => 1,
-                'is_alarm' => 0,
-                'door_status' => 1,
-                "battery_capacity_reamaining" => "50%",
-                'active' => 0,
-            ],
-            [
-                "id" => 2,
-                "MAC" => "DC:4f:22:BA:BA:7B",
-                "name" => "huy2",
-                "password" => "123123",
-                "location" => "123123sdas",
-                "version" => "1.0",
-                "volume" => "2",
-                "arm_delay" => "5s",
-                "alarm_delay" => "5s",
-                "alarm_duration" => "5s",
-                "self_test_mode" => "normal",
-                "is_arm" => 1,
-                'is_home' => 1,
-                'is_alarm' => 0,
-                'door_status' => 1,
-                "battery_capacity_reamaining" => "50%",
-                'active' => 0,
-            ]
-        ];
-        return $this->responseFormat(200, 'Success', $doorAlarmData);
+        $doorAlarms = DoorAlarm::all()->where('is_deleted', 0);
+        return $this->responseFormat(200, 'Success', $doorAlarms);
     }
 
     /**
@@ -91,41 +38,24 @@ class DoorAlarmController extends Controller
      */
     public function store(Request $request)
     {
-        $requestDoorAlarm = new DoorAlarmRequest();
-        $validator = $requestDoorAlarm->checkValidate($request);
-        if ($validator->fails())
-            return $this->responseFormat(422, $validator->errors());
-//        $cusId = Customer::where(['email'=>$request->email,'is_deleted'=> 0])->pluck('id')->first();
-//        if (!$cusId)
-//            return $this->responseFormat(404, 'Not found');
+        try {
+            $requestDoorAlarm = new DoorAlarmRequest();
+            $validator = $requestDoorAlarm->checkValidate($request);
+            if ($validator->fails())
+                return $this->responseFormat(422, $validator->errors());
+            $cusId = Customer::where(['email' => $request->email, 'is_deleted' => 0])->pluck('id')->first();
+            if (!$cusId)
+                return $this->responseFormat(404, 'Not found customer');
+            $doorAlaram = new DoorAlarm(['mac' => $request->mac]);
+            $customer = Customer::find($cusId);
+            $customer->doorAlarms()->save($doorAlaram);
 
-        $data = [
-            'dooralarm' => [
-                'id' => 1,
-                "MAC" => "DC4f22BABA7B",
-                "name" => "huy1",
-                "password" => "123123",
-                "location" => "123123sdas",
-                "version" => "1.0",
-                "volume" => "2",
-                "arm_delay" => "5s",
-                "alarm_delay" => "5s",
-                "alarm_duration" => "5s",
-                "self_test_mode" => "normal",
-                "battery_capacity_reamaining" => "50%",],
-            'customer' => [
-                "id" => 1,
-                "email" => "huy1@gmail.com",
-                "nick_name" => "huy",
-                "created_at" => "2019-01-04 09:35:44",
-                "updated_at" => "2019-01-04 09:35:44",
-                'is_deleted' => 0,
-            ],
-            'device_token' => 'abc',
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-        ];
-        return $this->responseFormat(200, 'Success', $data);
+            return $this->responseFormat(200, 'Success');
+
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
+
 
     }
 
@@ -142,36 +72,14 @@ class DoorAlarmController extends Controller
         $validator = $requestCus->checkValidate($request);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
-        $doorAlarmData = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            "devices" => [
-                [
-                    "id" => 1,
-                    "MAC" => "DC:4f:22:BA:BA:7B",
-                    "name" => "huy1",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                    'active' => 0,
-                ],
-            ]
-        ];
-
-        return $this->responseFormat(200, 'Success', $doorAlarmData);
+        $cusId = Customer::where(['email' => $request->email, 'is_deleted' => 0])->pluck('id')->first();
+        if (!$cusId)
+            return $this->responseFormat(404, 'Not found customer');
+        $customer = Customer::find($cusId);
+        $customer->doorAlarms;
+//        $arr = array();
+//        array_push($arr, $customer);
+        return $this->responseFormat(200, 'Success', $customer);
     }
 
     /**
@@ -183,41 +91,31 @@ class DoorAlarmController extends Controller
      */
     public function update(Request $request)
     {
-        $email = $request->email;
-        $requestCus = new CustomerRequest();
-        $validator = $requestCus->checkValidate($request,false);
-        if ($validator->fails())
-            return $this->responseFormat(422, $validator->errors());
-        $doorAlarmData = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            "devices" => [
-                [
-                    "id" => 1,
-                    "MAC" => "DC:4f:22:BA:BA:7B",
-                    "name" => "huy1",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                    'active' => 0,
-                ],
-            ]
-        ];
+        try {
+            $email = $request->email;
+            $requestCus = new CustomerRequest();
+            $validator = $requestCus->checkValidate($request, false);
+            if ($validator->fails())
+                return $this->responseFormat(422, $validator->errors());
+            $customer = Customer::where(['email' => $request->email, 'is_deleted' => 0])->first();
+            if (!$customer)
+                return $this->responseFormat(404, 'Not found customer');
+            $doorAlarms = $customer->doorAlarms;
+            if ($doorAlarms->isEmpty())
+                return $this->responseFormat(404, 'Not found door alarms');
+            foreach ($doorAlarms as $doorAlarm) {
+                if ($doorAlarm->mac == $request->mac) {
+                    $doorAlarm->fill($request->all());
+                    $doorAlarm->save();
+                    return $this->responseFormat(200, 'Success', $customer->doorAlarms->find($doorAlarm->id));
+                }
 
-        return $this->responseFormat(200, 'Success', $doorAlarmData);
+            }
+            return $this->responseFormat(404, 'Not found door alarm');
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
+
     }
 
     /**
@@ -229,28 +127,8 @@ class DoorAlarmController extends Controller
     public function destroy($id)
     {
         try {
-
-            $doorAlarm = DoorAlarm::find($id);
-            $this->doorAlarm = new DoorAlarm([
-                "Id" => '1',
-                "mac" => "DC4f22BABA7B",
-                "name" => "huy1",
-                "password" => "123123",
-                "location" => "123123sdas",
-                "version" => "1.0",
-                "volume" => "2",
-                "arm_delay" => "5s",
-                "alarm_delay" => "5s",
-                "alarm_duration" => "5s",
-                "self_test_mode" => "normal",
-                "battery_capacity_reamaining" => "50%",
-            ]);
-//            if (!$doorAlarm)
-//                return $this->responseFormat(404, 'Not found');
-//            if (!$doorAlarm->delete())
-//                return $this->responseFormat(422, 'Deleted failed');
+            DeviceToken::destroy($id);
             return $this->responseFormat(200, 'Success');
-
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
@@ -266,15 +144,16 @@ class DoorAlarmController extends Controller
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
             $cusId = Customer::where(['email' => $email, 'is_deleted' => 0])->pluck('id')->first();
-            $cusId = 1; // test
             if (!$cusId)
                 return $this->responseFormat(404, 'Not found customer');
-            $doorAlarmId = DeviceToken::where(['customer_id' => $cusId, 'device_token' => $deviceToken])
+            $deviceTokenId = DeviceToken::where(['customer_id' => $cusId, 'device_token' => $deviceToken])
                 ->pluck('id')->first();
-            $doorAlarmId = 1; //test
-            if (!$doorAlarmId)
-                return $this->responseFormat(404, 'Not found door alarm');
-            return $this->destroy($doorAlarmId);
+            if (!$deviceTokenId)
+                return $this->responseFormat(404, 'Not found device token');
+//            $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+//            $device = $customer->deviceToken->where('device_token',$deviceToken);
+//            return $this->responseFormat(422, 'aaa',$device);
+            return $this->destroy($deviceTokenId);
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
@@ -282,51 +161,19 @@ class DoorAlarmController extends Controller
 
     public function showCustomer(Request $request)
     {
-        $doorAlarmCus = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            "devices" => [
-                [
-                    "id" => 1,
-                    "MAC" => "DC4f22BABA7B",
-                    "name" => "huy1",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                ],
-                [
-                    "id" => 2,
-                    "MAC" => "DC4f22BABA7B",
-                    "name" => "huy2",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                ]
-            ]
-        ];
-        return $this->responseFormat(200,'Success',$doorAlarmCus);
+        $mac = $request->mac;
+        $validator = Validator::make($request->all(), [
+            'mac' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+        ]);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+        $doorAlarmId = DoorAlarm::where(['mac' => $mac, 'is_deleted' => 0])->pluck('id')->first();
+        if (!$doorAlarmId)
+            return $this->responseFormat(404, 'Not found door alarm');
+        $doorAlarm = DoorAlarm::find($doorAlarmId);
+        $doorAlarm->customers;
+//        $arr = array();
+//        array_push($arr, $customer);
+        return $this->responseFormat(200, 'Success', $doorAlarm);
     }
 }

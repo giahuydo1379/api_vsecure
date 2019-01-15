@@ -30,7 +30,7 @@ class DoorAlarm extends FormRequest
         if ($this->ins)
             return [
                 'email' => 'required|email',
-                'mac' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'mac' => 'required|unique:dooralarm|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
             ];
         else
             return [

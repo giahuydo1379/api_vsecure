@@ -11,22 +11,23 @@ use DB;
 
 class CustomerController extends Controller
 {
-    private  $data = [
-                [
-                    "id" => 1,
-                    "email" => "huy1@gmail.com",
-                    "nick_name" => "huy",
-                    "created_at" => "2019-01-04 09:35:44",
-                    "updated_at" => "2019-01-04 09:35:44"
-                    ],
-                [
-                    "id" => 2,
-                    "email" => "huy2@gmail.com",
-                    "nick_name" => "huy2",
-                    "created_at" => "2019-01-04 09:35:44",
-                    "updated_at" => "2019-01-04 09:35:44"
-                    ],
-             ];
+    private $data = [
+        [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44"
+        ],
+        [
+            "id" => 2,
+            "email" => "huy2@gmail.com",
+            "nick_name" => "huy2",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44"
+        ],
+    ];
+
     public function customers()
     {
         $data = [
@@ -51,8 +52,12 @@ class CustomerController extends Controller
         return response()->json($data, 200);
     }
 
-    public function index(){
-        return $this->responseFormat(200,'Success',$this->data);
+    public function index()
+    {
+        $customer = Customer::all()->where('is_deleted', 0);
+        if ($customer->isEmpty())
+            return $this->responseFormat(404, 'Empty');
+        return $this->responseFormat(200, 'Success', $customer);
     }
 
     public function customersDevice()
@@ -226,35 +231,25 @@ class CustomerController extends Controller
         $validator = $requestCus->checkValidate($request);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
-//        $customer = Customer::where(['email' => $email, 'is_deleted' => 0]);
-        $data = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            'is_deleted' => 0,
-        ];
-        return $this->responseFormat(200, 'Success', $data);
+        $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+        $info = $request->only('nick_name', 'password');
+        if ($request->password)
+            $info['password'] = bcrypt($info['password']);
+        $customer->fill($info);
+        if (!$customer->save())
+            return $this->responseFormat(422, 'Failed');
+        return $this->responseFormat(200, 'Success', $customer);
     }
 
-    public function findBy(Request $request)
+    public function show(Request $request)
     {
         $email = $request->email;
         $requestCus = new CustomerRequest();
         $validator = $requestCus->checkValidate($request);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
-//        $customer = Customer::where(['email' => $email, 'is_deleted' => 0]);
-        $data = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            'is_deleted' => 0,
-        ];
-        return $this->responseFormat(200, 'Success', $data);
+        $customer = Customer::all()->where('email', $email);
+        return $this->responseFormat(200, 'Success', $customer);
     }
 
 }

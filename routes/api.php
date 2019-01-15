@@ -39,8 +39,8 @@ Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
 
 Route::prefix('v1/customer')->group(function () {
     Route::get('/','CustomerController@index')->name('customer.list-all');
-    Route::get('show', 'CustomerController@findBy')->name('customer.details');
-    Route::post('/edit','CustomerController@update')->name('customer.edit');
+    Route::get('show', 'CustomerController@show')->name('customer.details');
+    Route::post('/update','CustomerController@update')->name('customer.update');
     Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
 
 });
