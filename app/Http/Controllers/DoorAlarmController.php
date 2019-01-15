@@ -26,11 +26,11 @@ class DoorAlarmController extends Controller
     public function index(Request $request)
     {
 
-        $email = $request->email;
-        $requestCus = new CustomerRequest();
-        $validator = $requestCus->checkValidate($request);
-        if ($validator->fails())
-            return $this->responseFormat(422, $validator->errors());
+//        $email = $request->email;
+//        $requestCus = new CustomerRequest();
+//        $validator = $requestCus->checkValidate($request);
+//        if ($validator->fails())
+//            return $this->responseFormat(422, $validator->errors());
 //        $cusId = Customer::where(['email' => $email, 'is_deleted' => 0])->pluck('id')->first();
 //        if (!$cusId)
 //            return $this->responseFormat(404, 'Not found customer');
@@ -41,50 +41,43 @@ class DoorAlarmController extends Controller
 //        if (!$doorAlarm)
 //            return $this->responseFormat(404, 'Empty');
         $doorAlarmData = [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44",
-            "devices" => [
-                [
-                    "id" => 1,
-                    "MAC" => "DC:4f:22:BA:BA:7B",
-                    "name" => "huy1",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                    'active' => 0,
-                ],
-                [
-                    "id" => 2,
-                    "MAC" => "DC:4f:22:BA:BA:7B",
-                    "name" => "huy2",
-                    "password" => "123123",
-                    "location" => "123123sdas",
-                    "version" => "1.0",
-                    "volume" => "2",
-                    "arm_delay" => "5s",
-                    "alarm_delay" => "5s",
-                    "alarm_duration" => "5s",
-                    "self_test_mode" => "normal",
-                    "is_arm" => 1,
-                    'is_home' => 1,
-                    'is_alarm' => 0,
-                    'door_status' => 1,
-                    "battery_capacity_reamaining" => "50%",
-                    'active' => 0,
-                ]
+            [
+                "id" => 1,
+                "MAC" => "DC:4f:22:BA:BA:7B",
+                "name" => "huy1",
+                "password" => "123123",
+                "location" => "123123sdas",
+                "version" => "1.0",
+                "volume" => "2",
+                "arm_delay" => "5s",
+                "alarm_delay" => "5s",
+                "alarm_duration" => "5s",
+                "self_test_mode" => "normal",
+                "is_arm" => 1,
+                'is_home' => 1,
+                'is_alarm' => 0,
+                'door_status' => 1,
+                "battery_capacity_reamaining" => "50%",
+                'active' => 0,
+            ],
+            [
+                "id" => 2,
+                "MAC" => "DC:4f:22:BA:BA:7B",
+                "name" => "huy2",
+                "password" => "123123",
+                "location" => "123123sdas",
+                "version" => "1.0",
+                "volume" => "2",
+                "arm_delay" => "5s",
+                "alarm_delay" => "5s",
+                "alarm_duration" => "5s",
+                "self_test_mode" => "normal",
+                "is_arm" => 1,
+                'is_home' => 1,
+                'is_alarm' => 0,
+                'door_status' => 1,
+                "battery_capacity_reamaining" => "50%",
+                'active' => 0,
             ]
         ];
         return $this->responseFormat(200, 'Success', $doorAlarmData);
@@ -142,9 +135,43 @@ class DoorAlarmController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request)
     {
-        //
+        $email = $request->email;
+        $requestCus = new CustomerRequest();
+        $validator = $requestCus->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+        $doorAlarmData = [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+            "devices" => [
+                [
+                    "id" => 1,
+                    "MAC" => "DC:4f:22:BA:BA:7B",
+                    "name" => "huy1",
+                    "password" => "123123",
+                    "location" => "123123sdas",
+                    "version" => "1.0",
+                    "volume" => "2",
+                    "arm_delay" => "5s",
+                    "alarm_delay" => "5s",
+                    "alarm_duration" => "5s",
+                    "self_test_mode" => "normal",
+                    "is_arm" => 1,
+                    'is_home' => 1,
+                    'is_alarm' => 0,
+                    'door_status' => 1,
+                    "battery_capacity_reamaining" => "50%",
+                    'active' => 0,
+                ],
+            ]
+        ];
+
+        return $this->responseFormat(200, 'Success', $doorAlarmData);
     }
 
     /**
@@ -154,9 +181,43 @@ class DoorAlarmController extends Controller
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $email = $request->email;
+        $requestCus = new CustomerRequest();
+        $validator = $requestCus->checkValidate($request,false);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+        $doorAlarmData = [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+            "devices" => [
+                [
+                    "id" => 1,
+                    "MAC" => "DC:4f:22:BA:BA:7B",
+                    "name" => "huy1",
+                    "password" => "123123",
+                    "location" => "123123sdas",
+                    "version" => "1.0",
+                    "volume" => "2",
+                    "arm_delay" => "5s",
+                    "alarm_delay" => "5s",
+                    "alarm_duration" => "5s",
+                    "self_test_mode" => "normal",
+                    "is_arm" => 1,
+                    'is_home' => 1,
+                    'is_alarm' => 0,
+                    'door_status' => 1,
+                    "battery_capacity_reamaining" => "50%",
+                    'active' => 0,
+                ],
+            ]
+        ];
+
+        return $this->responseFormat(200, 'Success', $doorAlarmData);
     }
 
     /**
@@ -217,5 +278,55 @@ class DoorAlarmController extends Controller
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
+    }
+
+    public function showCustomer(Request $request)
+    {
+        $doorAlarmCus = [
+            "id" => 1,
+            "email" => "huy1@gmail.com",
+            "nick_name" => "huy",
+            "created_at" => "2019-01-04 09:35:44",
+            "updated_at" => "2019-01-04 09:35:44",
+            "devices" => [
+                [
+                    "id" => 1,
+                    "MAC" => "DC4f22BABA7B",
+                    "name" => "huy1",
+                    "password" => "123123",
+                    "location" => "123123sdas",
+                    "version" => "1.0",
+                    "volume" => "2",
+                    "arm_delay" => "5s",
+                    "alarm_delay" => "5s",
+                    "alarm_duration" => "5s",
+                    "self_test_mode" => "normal",
+                    "is_arm" => 1,
+                    'is_home' => 1,
+                    'is_alarm' => 0,
+                    'door_status' => 1,
+                    "battery_capacity_reamaining" => "50%",
+                ],
+                [
+                    "id" => 2,
+                    "MAC" => "DC4f22BABA7B",
+                    "name" => "huy2",
+                    "password" => "123123",
+                    "location" => "123123sdas",
+                    "version" => "1.0",
+                    "volume" => "2",
+                    "arm_delay" => "5s",
+                    "alarm_delay" => "5s",
+                    "alarm_duration" => "5s",
+                    "self_test_mode" => "normal",
+                    "is_arm" => 1,
+                    'is_home' => 1,
+                    'is_alarm' => 0,
+                    'door_status' => 1,
+                    "battery_capacity_reamaining" => "50%",
+                ]
+            ]
+        ];
+        return $this->responseFormat(200,'Success',$doorAlarmCus);
     }
 }
