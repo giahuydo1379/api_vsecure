@@ -41,66 +41,105 @@ class PushNotify extends Command
      */
     public function handle()
     {
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+
+        $RMQHOST = '118.69.80.100';
+        $RMQPORT = 5672;
+        $RMQUSER = 'ftpuser';
+        $RMQPASS = 'FtpFdrive@#123$';
+
+        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
         $channel->queue_declare('hello', false, false, false, false);
 
 
         $callback = function ($msg) {
+//            dump($msg->body);
             $a = (strval($msg->body));
-            $argv = json_decode ($a, true);
+            $argv = json_decode($a, true);
             $address_mac = $argv['address_mac'];
+//            dd($address_mac);
             $doorAlarmIdCustomers = DoorAlarmCustomer::where(['mac_device' => $address_mac])
                 ->pluck('id_customer')->toArray();
-//            dd($doorAlarmIdCustomer);
-            foreach ($doorAlarmIdCustomers as $doorAlarmIdCustomer ){
+            foreach ($doorAlarmIdCustomers as $doorAlarmIdCustomer) {
                 $device_token[] = DeviceToken::where(['customer_id' => $doorAlarmIdCustomer, 'is_deleted' => 0])
                     ->pluck('device_token')->toArray();
             }
+            $deviceTokens = array_flatten($device_token);
+//            dd($deviceTokens);
 
-            dd(array_values($device_token));
+//            $client = new GuzzleClient([
+//                'base_uri' => 'https://fcm.googleapis.com/fcm/send',
+//            ]);
+//            $response = $client->post('', [
+//                'headers' => [
+//                    'Content-Type' => 'application/json',
+////                    'Content-Type' => 'application/x-www-form-urlencoded',
+//                    'Authorization ' => 'key=AIzaSyAbztHNWF15A3PSZ4Z1Won4YHjtRjOA9_M'
+//                ],
+//                'body' => json_encode([
+//                    'to' => 'dBbvVxK9k44:APA91bFBGkogWk7ObiO7ttRPUnG26OG_AJ9SgRjfgpRwGP0rEUaIt68C_usEYPpbspkPIVy1ptv5V00XBFTgZzQ6vV3XmgUeMkpUMHt0lkjE_QMWT7i3Gd9D8e0NuSX33nrJh-1pLTIC',
+//                    "collapse_key" => "type_a",
+//                    "notification" => [
+//                        "body" => "cua mo",
+//                        "title" => "Collapsing A",
+//                    ],
+//                    "data" => [
+//                        "body" => "First Notification",
+//                        "title" => "Collapsing A",
+//                        "key_1" => "Data for key one",
+//                        "key_2" => "Hellowww"
+//                    ],
+//                ])
+//            ]);
+//            $body = $response->getBody();
+////            dd($body);
+//            print_r(json_decode((string)$body));
 
+//            dd($client);
+
+            $client = new GuzzleClient([
+                'base_uri' => 'https://fcm.googleapis.com/fcm/send',
+            ]);
+            if($deviceTokens){
+                foreach ($deviceTokens as $deviceToken) {
+                    $response = $client->post('', [
+                        'headers' => [
+                            'content-type' => 'application/json',
+                            'Authorization ' => 'key=AIzaSyAbztHNWF15A3PSZ4Z1Won4YHjtRjOA9_M'
+                        ],
+                        'body' => json_encode([
+                            'to' => $deviceToken,
+                            "collapse_key" => "type_a",
+                            "notification" => [
+                                "body" => "cua mo",
+                                "title" => "Collapsing A",
+                            ],
+                            "data" => [
+                                "body" => "First Notification",
+                                "title" => "Collapsing A",
+                                "key_1" => "Data for key one",
+                                "key_2" => "Hellowww"
+                            ],
+                        ])
+
+                    ]);
+                    $body = $response->getBody();
+                    print_r(json_decode((string)$body));
+                }
+            }else{
+                echo " [x] Not found device_token\n";
+            }
 
             echo " [x] Done\n";
         };
 
         $channel->basic_consume('hello', '', false, true, false, false, $callback);
-
+        echo " [x] Waiting...\n";
         while (count($channel->callbacks)) {
             $channel->wait();
         }
-//
-//        $client = new GuzzleClient([
-//            'base_uri' => 'https://fcm.googleapis.com/fcm/send',
-//        ]);
-////        $payload = file_get_contents('/my-data.xml');
-//        $response = $client->post('', [
-//            'body' => [
-//                'to' => $deviceToken,
-//                "collapse_key" => "type_a",
-//                "notification" => [
-//                    "body" => "cua mo",
-//                    "title" => "Collapsing A",
-//                ],
-//                "data" => [
-//                    "body" => "First Notification",
-//                    "title" => "Collapsing A",
-//                    "key_1" => "Data for key one",
-//                    "key_2" => "Hellowww"
-//                ],
-//            ],
-//            'headers' => [
-//                'content-type' => 'application/json',
-//                'Authorization ' => 'key=AIzaSyAbztHNWF15A3PSZ4Z1Won4YHjtRjOA9_M'
-//            ]
-//        ]);
-//        $body = $response->getBody();
-//        print_r(json_decode((string)$body));
-//
-//        while (count($channel->callbacks)) {
-//            $channel->wait();
-//        }
+
     }
 
 

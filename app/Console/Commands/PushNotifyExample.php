@@ -39,7 +39,12 @@ class PushNotifyExample extends Command
      */
     public function handle()
     {
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $RMQHOST = '118.69.80.100';
+        $RMQPORT = 5672;
+        $RMQUSER = 'ftpuser';
+        $RMQPASS = 'FtpFdrive@#123$';
+
+        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
         $channel->queue_declare('hello', false, false, false, false);
