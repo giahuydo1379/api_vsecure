@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Models\Customer;
+use App\Http\Models\DeviceToken;
 use Illuminate\Http\Request;
+use App\Http\Requests\Customer as CustomerRequest;
 
 
 class DeviceController extends Controller
@@ -88,5 +91,36 @@ class DeviceController extends Controller
             ]
         ];
         return response()->json($data, 200);
+    }
+
+    public function delete(Request $request)
+    {
+        try {
+            $email = $request->email;
+            $requestCus = new CustomerRequest();
+            $validator = $requestCus->checkValidate($request, false);
+            if ($validator->fails())
+                return $this->responseFormat(422, $validator->errors());
+            $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+            if (!$customer)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
+            $deviceTokens = $customer->deviceToken;
+            $doorAlarms = $customer->doorAlarms;
+            foreach ($doorAlarms as $doorAlarm) {
+                if ($doorAlarm->mac == $request->mac) {
+                    $idDoorAlarm = $doorAlarm->id;
+                    $deviceToken = DeviceToken::where(['dooralarm_id' => $idDoorAlarm, 'customer_id' => $customer->id])
+                        ->get()->first();
+                    if ($deviceToken->update(['device_token'=>'']))
+                        return $this->responseFormat(200, trans('messages.delete_success'), $deviceToken);
+                    else
+                        return $this->responseFormat(422,trans('messages.delete_failed'));
+                }
+            }
+            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'door alarm']));
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
+
     }
 }
