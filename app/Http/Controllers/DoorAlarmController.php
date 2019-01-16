@@ -67,19 +67,58 @@ class DoorAlarmController extends Controller
      */
     public function show(Request $request)
     {
-        $email = $request->email;
-        $requestCus = new CustomerRequest();
-        $validator = $requestCus->checkValidate($request);
-        if ($validator->fails())
-            return $this->responseFormat(422, $validator->errors());
-        $cusId = Customer::where(['email' => $request->email, 'is_deleted' => 0])->pluck('id')->first();
-        if (!$cusId)
-            return $this->responseFormat(404, 'Not found customer');
-        $customer = Customer::find($cusId);
-        $customer->doorAlarms;
+        $data = [
+                "id"=> 8,
+                "email"=> "a1@gmail.com",
+                "nick_name"=>"aka",
+                "created_at"=> "2019-01-11 02:17:49",
+                "updated_at"=> "2019-01-11 02:17:49",
+                "is_deleted"=>0,
+                "door_alarms"=> [
+                    [
+                        "id" => 34,
+                        "name"=> null,
+                        "location"=> null,
+                        "mac"=> "a1:a1:a1:a1:a1:a1",
+                        "version"=> null,
+                        "volume"=> 3,
+                        "arm_delay"=> 5,
+                        "alarm_delay"=> 5,
+                        "alarm_duration"=> 60,
+                        "self_test_mode"=> 0,
+                        "timing_arm_disarm"=> null,
+                        "is_arm"=> null,
+                        "is_home"=> null,
+                        "is_alarm"=> null,
+                        "door_status" => null,
+                        "battery_capacity_reamaining" => null,
+                        "is_deleted"=> 0,
+                        "pivot"=> [
+                            "customer_id"=> 8,
+                            "dooralarm_id"=> 34
+                        ]
+                    ]
+                ],
+        ];
+        try {
+            $email = $request->email;
+            $requestCus = new CustomerRequest();
+            $validator = $requestCus->checkValidate($request);
+            if ($validator->fails())
+                return $this->responseFormat(422, $validator->errors());
+            $cusId = Customer::where(['email' => $request->email, 'is_deleted' => 0])->pluck('id')->first();
+            if (!$cusId)
+                return $this->responseFormat(404, 'Not found customer');
+            $customer = Customer::find($cusId);
+//            $customer->doorAlarms;
+
 //        $arr = array();
 //        array_push($arr, $customer);
-        return $this->responseFormat(200, 'Success', $customer);
+            return $this->responseFormat(200, 'Success', $data);
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, trans('messages.service_error'));
+        }
+
     }
 
     /**
