@@ -33,6 +33,8 @@ class DoorAlarmController extends Controller
     /**
      * Store a newly created resource in storage.
      *
+     * If door alarm is exists -> update device token
+     * else create door alarms and device token
      * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
@@ -43,15 +45,26 @@ class DoorAlarmController extends Controller
             $validator = $requestDoorAlarm->checkValidate($request);
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
-            $cusId = Customer::where(['email' => $request->email, 'is_deleted' => 0])->pluck('id')->first();
-            if (!$cusId)
+            $customer = Customer::where(['email' => $request->email, 'is_deleted' => 0])->first();
+            if (!$customer)
                 return $this->responseFormat(404, 'Not found customer');
-            $doorAlaram = new DoorAlarm(['mac' => $request->mac]);
-            $customer = Customer::find($cusId);
-            $customer->doorAlarms()->save($doorAlaram);
+            $doorAlarms = $customer->doorAlarms;
+            $doorAlarm = DoorAlarm::where('mac', $request->mac)->first();
+            if (!$doorAlarm) {
+                $doorAlaram = new DoorAlarm(['mac' => $request->mac]);
+                $customer->doorAlarms()->save($doorAlaram);
+                return $this->responseFormat(200, 'Success');
+            } else {
+                $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id])
+                    ->first();
 
-            return $this->responseFormat(200, 'Success');
-
+                if ($deviceToken)
+                    return $this->responseFormat(404,trans('messages.exists',['name'=>'device token']));
+                else{
+                    $cus = $customer->doorAlarms()->attach($doorAlarm->id);
+                    return $this->responseFormat(200, 'Success');
+                }
+            }
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
