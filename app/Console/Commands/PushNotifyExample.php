@@ -39,30 +39,28 @@ class PushNotifyExample extends Command
      */
     public function handle()
     {
-        $RMQHOST = '118.69.80.100';
-        $RMQPORT = 5672;
-        $RMQUSER = 'ftpuser';
-        $RMQPASS = 'FtpFdrive@#123$';
+//        $RMQHOST = '118.69.80.100';
+//        $RMQPORT = 5672;
+//        $RMQUSER = 'ftpuser';
+//        $RMQPASS = 'FtpFdrive@#123$';
+//
+//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
+//        $channel = $connection->channel();
+//
+//        $channel->queue_declare('hello', false, false, false, false);
 
-        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
+        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
         $channel = $connection->channel();
 
         $channel->queue_declare('hello', false, false, false, false);
 
-
         $argv = [
             'address_mac' => "DC4F228ABB6F",
-            'home_away' => 0,
+            'home_away' => 1,
             'alarm_door_bell' => 0,
             'battery' => 3,
-            'arming_dis_arming' => 1,
-            'door_status' => 0,
-            'alarm_volume' => 1,
-            'arm_delay' => 5,
-            'alarm_delay' => 5,
-            'alarm_duration' => 60,
-            'self_check_mode' => 0
-
+            'arming_dis_arming' => 0,
+            'door_status' => 1
         ];
 
         $argv = json_encode($argv);
