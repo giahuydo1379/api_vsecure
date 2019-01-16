@@ -70,8 +70,6 @@ class DoorAlarmController extends Controller
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
-
-
     }
 
     /**
@@ -183,7 +181,7 @@ class DoorAlarmController extends Controller
     {
         $mac = $request->mac;
         $validator = Validator::make($request->all(), [
-            'mac' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+            'mac' => 'required|regex:/^([0-9A-Fa-f]{2}){5}([0-9A-Fa-f]{2})$/',
         ]);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
@@ -195,5 +193,57 @@ class DoorAlarmController extends Controller
 //        $arr = array();
 //        array_push($arr, $customer);
         return $this->responseFormat(200, 'Success', $doorAlarm);
+    }
+
+    public function share(Request $request)
+    {
+        try {
+            $requestDoorAlarm = new CustomerRequest();
+            $validator = $requestDoorAlarm->checkValidate($request, false);
+            if ($validator->fails())
+                return $this->responseFormat(422, $validator->errors());
+            $customer = $this->checkExistCustomer($request->email);
+
+            if (!$customer)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
+            $doorAlarm = $this->checkExistDoorAlarm($request->mac);
+            if (!$doorAlarm)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'door alarm']));
+            $deviceToken = $this->checkExistDeviceToken($customer->id, $doorAlarm->id);
+            if ($deviceToken)
+                return $this->responseFormat(404, trans('messages.exists', ['name' => 'device token']));
+            else {
+                $customer->doorAlarms()->attach($doorAlarm->id);
+                return $this->responseFormat(200, 'Success');
+            }
+
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
+    }
+
+//    --------------------- PRIVATE FUNCTION ---------------------------- //
+
+    private function checkExistCustomer($email)
+    {
+        $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+        return $customer;
+    }
+
+    private function checkExistDoorAlarm($mac)
+    {
+        $doorAlarm = DoorAlarm::where(['mac' => $mac])->first();
+        return $doorAlarm;
+    }
+
+    private function checkExistDeviceToken($customerId, $doorAlarmId)
+    {
+        if ($customerId && $doorAlarmId){
+            $deviceToken = DeviceToken::where(['customer_id' => $customerId, 'dooralarm_id' => $doorAlarmId])
+                ->first();
+            return $deviceToken;
+        }else{
+            return null;
+        }
     }
 }
