@@ -48,7 +48,7 @@ Route::prefix('v1/customer')->group(function () {
 
 });
 Route::prefix('v1/device-token')->group(function () {
-    Route::delete('delete', 'DeviceController@delete')->name('door-alarm.delete');
+    Route::post('delete', 'DeviceController@delete')->name('door-alarm.delete');
 });
 Route::prefix('v1/door-alarm')->group(function () {
     Route::get('/', 'DoorAlarmController@index')->name('door-alarm.show-all');
@@ -56,6 +56,8 @@ Route::prefix('v1/door-alarm')->group(function () {
     Route::get('/customer', 'DoorAlarmController@showCustomer')->name('door-alarm.show-all-customer');
     Route::post('create', 'DoorAlarmController@store')->name('door-alarm.store');
     Route::post('/edit', 'DoorAlarmController@update')->name('door-alarm.edit');
-    Route::delete('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
+    Route::post('/share', 'DoorAlarmController@share')->name('door-alarm.share');
+    Route::post('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
+
 });
 
