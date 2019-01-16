@@ -34,7 +34,7 @@ class Customer extends FormRequest
         else
             return [
                 'email' => 'required|email',
-                'mac' => 'required|regex:/^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/',
+                'mac' => 'required|regex:/^([0-9A-Fa-f]{2}){5}([0-9A-Fa-f]{2})$/',
             ];
     }
 

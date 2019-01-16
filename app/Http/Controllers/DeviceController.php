@@ -107,12 +107,17 @@ class DeviceController extends Controller
             $deviceTokens = $customer->deviceToken;
             $doorAlarms = $customer->doorAlarms;
             foreach ($doorAlarms as $doorAlarm) {
-                if ($doorAlarm->mac == $request->mac){
+                if ($doorAlarm->mac == $request->mac) {
                     $idDoorAlarm = $doorAlarm->id;
-                    $deviceToken = DeviceToken::where();
+                    $deviceToken = DeviceToken::where(['dooralarm_id' => $idDoorAlarm, 'customer_id' => $customer->id])
+                        ->get()->first();
+                    if ($deviceToken->update(['device_token'=>'']))
+                        return $this->responseFormat(200, trans('messages.delete_success'), $deviceToken);
+                    else
+                        return $this->responseFormat(422,trans('messages.delete_failed'));
                 }
             }
-            return $this->responseFormat(200, 'Success', $doorAlarms);
+            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'door alarm']));
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
