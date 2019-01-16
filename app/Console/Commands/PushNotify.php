@@ -161,7 +161,6 @@ class PushNotify extends Command
                         "title" => "Cửa đóng",
                     ];
                 }
-
             }
 
             $doorAlarm = DoorAlarm::updateOrCreate(
@@ -190,11 +189,11 @@ class PushNotify extends Command
                             "notification" => $notify,
                             "data" => [
                                 'address_mac' => $argv['address_mac'],
-                                'home_away' => $argv['home_away'],
-                                'alarm_door_bell' => $argv['alarm_door_bell'],
-                                'battery' => $argv['battery'],
-                                'arming_dis_arming' => $argv['arming_dis_arming'],
-                                'door_status' => $argv['door_status']
+                                'home_away' => $is_home,
+                                'alarm_door_bell' => $is_alarm,
+                                'battery' => $battery_capacity_reamaining,
+                                'arming_dis_arming' => $is_arm,
+                                'door_status' => $door_status
                             ],
                         ])
 

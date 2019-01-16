@@ -37,6 +37,8 @@ Route::post('delete/device-token-by-email', 'CustomerController@deleteDevicetoke
 Route::get('customer/device/1', 'CustomerController@customersDevice');
 Route::post('add/device-customer', 'CustomerController@insertDooAlarmCustomer');
 Route::post('device-list/customer', 'CustomerController@deviceListCustomer');
+Route::post('reponse/app', 'NotifyController@receiveReponseFromApp');
+Route::get('test', 'NotifyController@test');
 
 Route::prefix('v1/customer')->group(function () {
     Route::get('/', 'CustomerController@index')->name('customer.list-all');
@@ -56,3 +58,4 @@ Route::prefix('v1/door-alarm')->group(function () {
     Route::post('/edit', 'DoorAlarmController@update')->name('door-alarm.edit');
     Route::delete('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
 });
+
