@@ -50,17 +50,19 @@ class DoorAlarmController extends Controller
                 return $this->responseFormat(404, 'Not found customer');
             $doorAlarms = $customer->doorAlarms;
             $doorAlarm = DoorAlarm::where('mac', $request->mac)->first();
+
             if (!$doorAlarm) {
                 $doorAlaram = new DoorAlarm(['mac' => $request->mac]);
                 $customer->doorAlarms()->save($doorAlaram);
                 return $this->responseFormat(200, 'Success');
             } else {
+
                 $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id])
                     ->first();
 
                 if ($deviceToken)
-                    return $this->responseFormat(404,trans('messages.exists',['name'=>'device token']));
-                else{
+                    return $this->responseFormat(404, trans('messages.exists', ['name' => 'device token']));
+                else {
                     $cus = $customer->doorAlarms()->attach($doorAlarm->id);
                     return $this->responseFormat(200, 'Success');
                 }
