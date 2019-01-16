@@ -11,46 +11,6 @@ use DB;
 
 class CustomerController extends Controller
 {
-    private $data = [
-        [
-            "id" => 1,
-            "email" => "huy1@gmail.com",
-            "nick_name" => "huy",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44"
-        ],
-        [
-            "id" => 2,
-            "email" => "huy2@gmail.com",
-            "nick_name" => "huy2",
-            "created_at" => "2019-01-04 09:35:44",
-            "updated_at" => "2019-01-04 09:35:44"
-        ],
-    ];
-
-    public function customers()
-    {
-        $data = [
-            "status" => "OK",
-            "data" => [
-                "1" => [
-                    "id" => 1,
-                    "email" => "huy1@gmail.com",
-                    "nick_name" => "huy",
-                    "created_at" => "2019-01-04 09:35:44",
-                    "updated_at" => "2019-01-04 09:35:44"
-                ],
-                "2" => [
-                    "id" => 2,
-                    "email" => "huy2@gmail.com",
-                    "nick_name" => "huy2",
-                    "created_at" => "2019-01-04 09:35:44",
-                    "updated_at" => "2019-01-04 09:35:44"
-                ],
-            ]
-        ];
-        return response()->json($data, 200);
-    }
 
     public function index()
     {
