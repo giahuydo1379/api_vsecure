@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Models\Customer;
+use App\Http\Models\DeviceToken;
 use Illuminate\Http\Request;
 use App\Http\Requests\Customer as CustomerRequest;
 
@@ -106,7 +107,10 @@ class DeviceController extends Controller
             $deviceTokens = $customer->deviceToken;
             $doorAlarms = $customer->doorAlarms;
             foreach ($doorAlarms as $doorAlarm) {
-//                if ($doorAlarm->mac = )
+                if ($doorAlarm->mac == $request->mac){
+                    $idDoorAlarm = $doorAlarm->id;
+                    $deviceToken = DeviceToken::where();
+                }
             }
             return $this->responseFormat(200, 'Success', $doorAlarms);
         } catch (\Exception $exception) {
