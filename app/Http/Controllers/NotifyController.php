@@ -87,4 +87,14 @@ class NotifyController extends Controller
         return $this->responseFormat(200, 'Success', $data);
     }
 
+    public function receiveReponseFromApp(Request $request)
+    {
+        $data = $request ->all();
+        return $data;
+
+    }
+    public function test(){
+        return $this->receiveReponseFromApp();
+    }
+
 }
