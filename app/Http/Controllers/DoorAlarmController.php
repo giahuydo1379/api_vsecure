@@ -143,22 +143,22 @@ class DoorAlarmController extends Controller
     {
         try {
             $email = $request->email;
-            $deviceToken = $request->device_token;
-            $requestDoorAlarm = new DoorAlarmRequest();
+            $mac = $request->mac;
+            $requestDoorAlarm = new CustomerRequest();
             $validator = $requestDoorAlarm->checkValidate($request, false);
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
-            $cusId = Customer::where(['email' => $email, 'is_deleted' => 0])->pluck('id')->first();
-            if (!$cusId)
-                return $this->responseFormat(404, 'Not found customer');
-            $deviceTokenId = DeviceToken::where(['customer_id' => $cusId, 'device_token' => $deviceToken])
+            $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+            if (!$customer)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
+            $doorAlarm = DoorAlarm::where('mac', $mac)->first();
+            if (!$doorAlarm)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'door alarm']));
+            $idDeviceToken = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'customer_id' => $customer->id])
                 ->pluck('id')->first();
-            if (!$deviceTokenId)
-                return $this->responseFormat(404, 'Not found device token');
-//            $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
-//            $device = $customer->deviceToken->where('device_token',$deviceToken);
-//            return $this->responseFormat(422, 'aaa',$device);
-            return $this->destroy($deviceTokenId);
+            if (!$idDeviceToken)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'device token']));
+            return $this->destroy($idDeviceToken);
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
         }
