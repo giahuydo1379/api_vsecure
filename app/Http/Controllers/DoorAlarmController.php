@@ -259,4 +259,8 @@ class DoorAlarmController extends Controller
         }
 
     }
+
+//    ----------------------
+
+    public static function getDoorByCustomer(){}
 }

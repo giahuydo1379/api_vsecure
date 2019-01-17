@@ -12,9 +12,17 @@ class NotifyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $requestNotify = new Notify();
+        $validator = $requestNotify->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+        $customer = CustomerController::checkExistCustomer($request->email);
+        if (!$customer)
+            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
+
+
     }
 
     /**
@@ -71,10 +79,10 @@ class NotifyController extends Controller
         $data = [
             [
                 "id" => 1,
-                "nick_name" => "huy",
-                "action" => "action1",
-                "time_push" => "2019-01-04 09:35:44",
-                "model_device" => " device1",
+                "dooralarm_name" => "huy", // string
+                "action" => "action1",  //string
+                "time_push" => "2019-01-04 09:35:44", // current time  created_at
+                "mac_address" => " device1", //
             ],
             [
                 "id" => 2,
