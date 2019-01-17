@@ -11,6 +11,8 @@ return [
     'exists' => ':name đã tồn tại.',
     'success' => 'Thành công.',
     'fail' => 'Thất bại.',
+    'create_success' => 'Tạo  mới thành công.',
+    'create_failed' => 'Tạo mới bị thất bại.',
     'update_success' => 'Cập nhật đã thành công.',
     'update_failed' => 'Cập nhật đã bị thất bại.',
     'delete_success' => 'Đã xóa thành công.',
@@ -23,5 +25,9 @@ return [
     'not_acceptable' => 'Không thể chấp nhận.',
     'unprocessable_entity' => 'Không thể thực thi dữ liệu trống.',
     'service_error' => 'Service bị lỗi. :mess',
+    'not_login' => 'Chưa được login.',
+    'not_logout' => 'Chưa logout',
+    'logout_failed' => 'Logout đã thất bại.',
+    'logout_success' => 'Logout thành công.',
 
 ];

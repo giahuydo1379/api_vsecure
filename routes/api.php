@@ -42,6 +42,8 @@ Route::get('test', 'NotifyController@test');
 
 Route::prefix('v1/customer')->group(function () {
     Route::get('/', 'CustomerController@index')->name('customer.list-all');
+    Route::post('/login', 'CusAccountController@login')->name('customer.login');
+    Route::post('/logout', 'CusAccountController@logout')->name('customer.logout');
     Route::get('show', 'CustomerController@show')->name('customer.details');
     Route::post('/update', 'CustomerController@update')->name('customer.update');
     Route::get('/notify/show-all', 'NotifyController@showAll')->name('customer.show-all-notify');
