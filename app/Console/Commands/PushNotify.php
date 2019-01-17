@@ -72,14 +72,24 @@ class PushNotify extends Command
             $is_arm = $argv['arming_dis_arming'];
             $door_status = $argv['door_status'];
 //            dd($address_mac);
-            $doorAlarmIdCustomers = DoorAlarmCustomer::where(['mac_device' => $address_mac])
-                ->pluck('id_customer')->toArray();
-            foreach ($doorAlarmIdCustomers as $doorAlarmIdCustomer) {
-                $device_token[] = DeviceToken::where(['customer_id' => $doorAlarmIdCustomer, 'is_deleted' => 0])
+
+//            $doorAlarmIdCustomers = DoorAlarmCustomer::where(['mac_device' => $address_mac])
+//                ->pluck('id_customer')->toArray();
+//            foreach ($doorAlarmIdCustomers as $doorAlarmIdCustomer) {
+//                $device_token[] = DeviceToken::where(['customer_id' => $doorAlarmIdCustomer, 'is_deleted' => 0])
+//                    ->pluck('device_token')->toArray();
+//            }
+
+            $doorAlarmIds = DoorAlarm::where(['mac' => $address_mac]) ->pluck('id')->toArray();
+            foreach ($doorAlarmIds as $doorAlarmId) {
+                $device_token[] = DeviceToken::where(['dooralarm_id' => $doorAlarmId, 'is_deleted' => 0])
                     ->pluck('device_token')->toArray();
             }
+//            $doorAlarmIdCustomers = DeviceToken::where(['dooralarm_id' => $address_mac])
+//                ->pluck('id_customer')->toArray();
             $deviceTokens = array_flatten($device_token);
-            $doorAlarmMac = DoorAlarm::where('mac_device', $address_mac)->first();
+
+            $doorAlarmMac = DoorAlarm::where('mac', $address_mac)->first();
             $notify = [
                 "body" => "Xin chào",
                 "title" => "Xin chào",
@@ -164,7 +174,7 @@ class PushNotify extends Command
             }
 
             $doorAlarm = DoorAlarm::updateOrCreate(
-                ['mac_device' => $address_mac],
+                ['mac' => $address_mac],
                 ['is_home' => $is_home,
                     'is_alarm' => $is_alarm,
                     'battery_capacity_reamaining' => $battery_capacity_reamaining,
@@ -172,10 +182,17 @@ class PushNotify extends Command
                     'door_status' => $door_status]
             );
 
+            $log = new Log;
+
+            $log->name = $request->name;
+
+            $flight->save();
+
 
             $client = new GuzzleClient([
                 'base_uri' => 'https://fcm.googleapis.com/fcm/send',
             ]);
+
             if ($deviceTokens) {
                 foreach ($deviceTokens as $deviceToken) {
                     $response = $client->post('', [

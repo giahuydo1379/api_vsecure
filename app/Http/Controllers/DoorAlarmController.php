@@ -247,16 +247,4 @@ class DoorAlarmController extends Controller
         }
     }
 
-    public function insert(Request $request)
-    {
-        try{
-            $doorAlarm = new DoorAlarm;
-            $doorAlarm-> mac = $request->mac;
-            $doorAlarm -> save();
-            return $this->responseFormat(200, 'Success');
-        } catch (\Exception $exception) {
-            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
-        }
-
-    }
 }

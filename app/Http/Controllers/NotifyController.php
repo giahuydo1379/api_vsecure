@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Notify;
 use Illuminate\Http\Request;
+use App\Http\Models\DoorAlarm;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class NotifyController extends Controller
 {
@@ -89,12 +92,89 @@ class NotifyController extends Controller
 
     public function receiveReponseFromApp(Request $request)
     {
-        $data = $request ->all();
-        return $data;
+        try {
+            $mac = $request->mac;
+            $is_arm = $request->is_arm;
+            $volume = $request->volume;
+            $arm_delay = $request->arm_delay;
+            $alarm_delay = $request->alarm_delay;
+            $alarm_duration = $request->alarm_duration;
+            $self_test_mode = $request->self_test_mode;
+            $timing_arm_disarm = $request->timing_arm_disarm;
+            $doorAlarmMac = DoorAlarm::where('mac', $mac)->first();
+            if ($doorAlarmMac->is_arm != $is_arm) {
+                $this->connectRabbitmq('is_arm',$is_arm);
+                $this->updateReponseFromApp('is_arm', $is_arm, $mac);
+            }
+            if ($doorAlarmMac->volume != $volume) {
+                $this->connectRabbitmq('volume',$volume);
+                $this->updateReponseFromApp('volume', $volume, $mac);
+            }
+            if ($doorAlarmMac->arm_delay != $arm_delay) {
+                $this->connectRabbitmq('arm_delay',$arm_delay);
+                $this->updateReponseFromApp('arm_delay', $arm_delay, $mac);
+            }
+            if ($doorAlarmMac->alarm_delay != $alarm_delay) {
+                $this->connectRabbitmq('arm_delay',$arm_delay);
+                $this->updateReponseFromApp('alarm_delay', $alarm_delay, $mac);
+            }
+            if ($doorAlarmMac->alarm_duration != $alarm_duration) {
+                $this->connectRabbitmq('alarm_duration',$alarm_duration);
+                $this->updateReponseFromApp('alarm_duration', $alarm_duration, $mac);
+            }
+            if ($doorAlarmMac->self_test_mode != $self_test_mode) {
+                $this->connectRabbitmq('self_test_mode',$self_test_mode);
+                $this->updateReponseFromApp('self_test_mode', $self_test_mode, $mac);
+            }
+            if ($doorAlarmMac->timing_arm_disarm != $timing_arm_disarm) {
+                $this->connectRabbitmq('timing_arm_disarm',$timing_arm_disarm);
+                $this->updateReponseFromApp('timing_arm_disarm', $timing_arm_disarm, $mac);
+            }
+//            dd($doorAlarmMac);
+            return $this->responseFormat(200, 'Success');
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
 
     }
-    public function test(){
-        return $this->receiveReponseFromApp();
+
+    public function updateReponseFromApp($type, $data, $mac)
+    {
+        $update = DoorAlarm::where('mac', $mac)->update([
+            $type => $data,
+        ]);
+        return $this->responseFormat(200, 'Success');
     }
+
+    public function connectRabbitmq($type, $data)
+    {
+//        $RMQHOST = '118.69.80.100';
+//        $RMQPORT = 5672;
+//        $RMQUSER = 'ftpuser';
+//        $RMQPASS = 'FtpFdrive@#123$';
+//
+//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
+//        $channel = $connection->channel();
+
+//        $channel->queue_declare('pushReponse', false, false, false, false);
+
+        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $channel = $connection->channel();
+
+        $channel->queue_declare('hello2', false, false, false, false);
+        $argv = [
+            $type => $data,
+        ];
+
+        $argv = json_encode($argv);
+
+        $msg = new AMQPMessage($argv);
+
+//        $channel->basic_publish($msg, '', 'pushReponse');
+        $channel->basic_publish($msg, '', 'hello2');
+
+        echo ' [x] Sent ', "\n";
+    }
+
 
 }

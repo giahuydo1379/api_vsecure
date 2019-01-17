@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\PushNotify::class,
         Commands\PushNotifyExample::class,
-        Commands\PushReponse::class
+        Commands\PushReponse::class,
+        Commands\test::class
     ];
 
     /**
