@@ -53,6 +53,7 @@ Route::prefix('v1/device-token')->group(function () {
     Route::post('delete', 'DeviceController@delete')->name('door-alarm.delete');
 });
 Route::prefix('v1/door-alarm')->group(function () {
+    Route::post('insert', 'DoorAlarmController@insert')->name('door-alarm.insert');
     Route::get('/', 'DoorAlarmController@index')->name('door-alarm.show-all');
     Route::get('show', 'DoorAlarmController@show')->name('door-alarm.show-by-email');
     Route::get('/customer', 'DoorAlarmController@showCustomer')->name('door-alarm.show-all-customer');
