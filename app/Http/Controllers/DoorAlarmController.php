@@ -238,12 +238,19 @@ class DoorAlarmController extends Controller
 
     private function checkExistDeviceToken($customerId, $doorAlarmId)
     {
-        if ($customerId && $doorAlarmId){
+        if ($customerId && $doorAlarmId) {
             $deviceToken = DeviceToken::where(['customer_id' => $customerId, 'dooralarm_id' => $doorAlarmId])
                 ->first();
             return $deviceToken;
-        }else{
+        } else {
             return null;
         }
+    }
+
+    public function insert(Request $request)
+    {
+        $doorAlarm = new DoorAlarm();
+        $doorAlarm-> mac = $request->mac;
+        $doorAlarm -> save();
     }
 }
