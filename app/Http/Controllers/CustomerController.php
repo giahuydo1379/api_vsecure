@@ -212,5 +212,11 @@ class CustomerController extends Controller
         return $this->responseFormat(200, 'Success', $customer);
     }
 
+    public static function checkExistCustomer($email)
+    {
+        $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
+        return $customer;
+    }
+
 
 }
