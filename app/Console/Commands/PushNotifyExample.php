@@ -56,7 +56,7 @@ class PushNotifyExample extends Command
 
         $argv = [
             'address_mac' => "DC4F228ABB6F",
-            'home_away' => 1,
+            'home_away' => 0,
             'alarm_door_bell' => 0,
             'battery' => 3,
             'arming_dis_arming' => 0,
