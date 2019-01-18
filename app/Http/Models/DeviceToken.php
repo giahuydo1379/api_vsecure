@@ -17,9 +17,25 @@ class DeviceToken extends Model
 
     protected $fillable = ['dooralarm_id', 'customer_id', 'device_token'];
 
+    public function notifications()
+    {
+        return $this->hasMany(Notify::class, 'device_token_id');
+    }
+
     public static function findOrCreate($data = array())
     {
         $object = self::where($data)->first();
         return $object ? $object : new self();
     }
+
+    public static function findByDeviceToken($deviceTokenStr)
+    {
+        if (!$deviceTokenStr)
+            return null;
+        $deviceTokens = DeviceToken::where('device_token', $deviceTokenStr)->get();
+        if (!$deviceTokens || $deviceTokens->isEmpty())
+            return null;
+        return $deviceTokens;
+    }
+
 }

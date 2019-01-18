@@ -249,10 +249,10 @@ class DoorAlarmController extends Controller
 
     public function insert(Request $request)
     {
-        try{
+        try {
             $doorAlarm = new DoorAlarm;
-            $doorAlarm-> mac = $request->mac;
-            $doorAlarm -> save();
+            $doorAlarm->mac = $request->mac;
+            $doorAlarm->save();
             return $this->responseFormat(200, 'Success');
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
@@ -260,7 +260,26 @@ class DoorAlarmController extends Controller
 
     }
 
-//    ----------------------
+    /*
+     * params int $doorAlarm id
+     * return false | object => not exist | exist
+     *
+     * */
+    public static function getDoorAlarmById($doorAlarmId)
+    {
+        $doorAlarm = DoorAlarm::find($doorAlarmId);
+        if (!$doorAlarm)
+            return false;
+        return $doorAlarm;
+    }
 
-    public static function getDoorByCustomer(){}
+    public static function showCusbyDoorAlarmId($doorAlarmId)
+    {
+        $doorAlarm = self::getDoorAlarmById($doorAlarmId);
+        if (!$doorAlarm)
+            return false;
+        $customers = $doorAlarm->customers;
+        return $customers;
+    }
+
 }

@@ -29,7 +29,7 @@ class Notify extends FormRequest
     {
         if ($this->ins)
             return [
-                'email' => 'required|email',
+                'device_token' => 'required',
             ];
         else
             return [

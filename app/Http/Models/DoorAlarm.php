@@ -22,7 +22,14 @@ class DoorAlarm extends Model
             'dooralarm_id', 'customer_id');
     }
 
-    public function deviceTokens(){
-        return $this->hasMany(DeviceToken::class,'dooralarm_id');
+    public function deviceTokens()
+    {
+        return $this->hasMany(DeviceToken::class, 'dooralarm_id');
     }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notify::class, 'dooralarm_id');
+    }
+
 }
