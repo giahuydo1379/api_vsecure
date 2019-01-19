@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Models\Customer;
 use App\Http\Requests\Notify;
+use App\Http\Models\Notify as Notifications;
 use Illuminate\Http\Request;
 use App\Http\Models\DoorAlarm;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -15,9 +17,33 @@ class NotifyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $requestNotify = new Notify();
+        $validator = $requestNotify->checkValidate($request);
+        if ($validator->fails())
+            return $this->responseFormat(422, $validator->errors());
+//        $customer = CustomerController::checkExistCustomer($request->email);
+//        if (!$customer)
+//            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
+        $notifications = Notifications::all();
+        $notify = array();
+        foreach ($notifications as $notification) {
+            $notify['notify'][] = $notification;
+            $deviceToken = $notification->deviceToken;
+            if ($deviceToken->device_token == $request->device_token) {
+
+                $customer_id = $deviceToken->customer_id;
+                $customer = Customer::find($customer_id);
+//                return $this->responseFormat(200,'ss',$deviceToken);
+                $doorAlarms = $customer->doorAlarms;
+                foreach ($doorAlarms as $doorAlarm) {
+                   $notify['device'][] = $doorAlarm;
+                }
+                return $this->responseFormat(200, trans('messages.success'), $notify);
+            }
+        }
+        return $this->responseFormat(404, trans('messages.not_found',['name'=> 'notify']));
     }
 
     /**
@@ -74,10 +100,10 @@ class NotifyController extends Controller
         $data = [
             [
                 "id" => 1,
-                "nick_name" => "huy",
-                "action" => "action1",
-                "time_push" => "2019-01-04 09:35:44",
-                "model_device" => " device1",
+                "dooralarm_name" => "huy", // string
+                "action" => "action1",  //string
+                "time_push" => "2019-01-04 09:35:44", // current time  created_at
+                "mac_address" => " device1", //
             ],
             [
                 "id" => 2,
@@ -103,31 +129,31 @@ class NotifyController extends Controller
             $timing_arm_disarm = $request->timing_arm_disarm;
             $doorAlarmMac = DoorAlarm::where('mac', $mac)->first();
             if ($doorAlarmMac->is_arm != $is_arm) {
-                $this->connectRabbitmq('is_arm',$is_arm);
+                $this->connectRabbitmq('is_arm', $is_arm);
                 $this->updateReponseFromApp('is_arm', $is_arm, $mac);
             }
             if ($doorAlarmMac->volume != $volume) {
-                $this->connectRabbitmq('volume',$volume);
+                $this->connectRabbitmq('volume', $volume);
                 $this->updateReponseFromApp('volume', $volume, $mac);
             }
             if ($doorAlarmMac->arm_delay != $arm_delay) {
-                $this->connectRabbitmq('arm_delay',$arm_delay);
+                $this->connectRabbitmq('arm_delay', $arm_delay);
                 $this->updateReponseFromApp('arm_delay', $arm_delay, $mac);
             }
             if ($doorAlarmMac->alarm_delay != $alarm_delay) {
-                $this->connectRabbitmq('arm_delay',$arm_delay);
+                $this->connectRabbitmq('arm_delay', $arm_delay);
                 $this->updateReponseFromApp('alarm_delay', $alarm_delay, $mac);
             }
             if ($doorAlarmMac->alarm_duration != $alarm_duration) {
-                $this->connectRabbitmq('alarm_duration',$alarm_duration);
+                $this->connectRabbitmq('alarm_duration', $alarm_duration);
                 $this->updateReponseFromApp('alarm_duration', $alarm_duration, $mac);
             }
             if ($doorAlarmMac->self_test_mode != $self_test_mode) {
-                $this->connectRabbitmq('self_test_mode',$self_test_mode);
+                $this->connectRabbitmq('self_test_mode', $self_test_mode);
                 $this->updateReponseFromApp('self_test_mode', $self_test_mode, $mac);
             }
             if ($doorAlarmMac->timing_arm_disarm != $timing_arm_disarm) {
-                $this->connectRabbitmq('timing_arm_disarm',$timing_arm_disarm);
+                $this->connectRabbitmq('timing_arm_disarm', $timing_arm_disarm);
                 $this->updateReponseFromApp('timing_arm_disarm', $timing_arm_disarm, $mac);
             }
 //            dd($doorAlarmMac);

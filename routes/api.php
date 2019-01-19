@@ -62,4 +62,9 @@ Route::prefix('v1/door-alarm')->group(function () {
     Route::post('delete', 'DoorAlarmController@delete')->name('door-alarm.delete');
 
 });
+Route::prefix('/v1/notify')->group(function () {
+    Route::get('/show-all', 'NotifyController@index')->name('notify.show-all');
+});
+
+
 

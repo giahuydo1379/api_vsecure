@@ -32,7 +32,7 @@ class CusAccountController extends Controller
             try {
                 $token = JWTAuth::attempt($credentials);
                 if (!$token)
-                    return $this->responseFormat(404, trans('messages.not_found'));
+                    return $this->responseFormat(404, trans('messages.not_found',['name'=> 'customer']));
                 $customer = JWTAuth::toUser($token);
                 $customerId = $customer->id;
 
