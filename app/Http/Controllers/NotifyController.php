@@ -128,32 +128,28 @@ class NotifyController extends Controller
             $self_test_mode = $request->self_test_mode;
             $timing_arm_disarm = $request->timing_arm_disarm;
             $doorAlarmMac = DoorAlarm::where('mac', $mac)->first();
+            if($doorAlarmMac->door_status == 1 && $doorAlarmMac-> is_alarm == 0){
+                $this->connectRabbitmq('is_arm', $is_arm, $mac);
+            }
             if ($doorAlarmMac->is_arm != $is_arm) {
-                $this->connectRabbitmq('is_arm', $is_arm);
                 $this->updateReponseFromApp('is_arm', $is_arm, $mac);
             }
             if ($doorAlarmMac->volume != $volume) {
-                $this->connectRabbitmq('volume', $volume);
                 $this->updateReponseFromApp('volume', $volume, $mac);
             }
             if ($doorAlarmMac->arm_delay != $arm_delay) {
-                $this->connectRabbitmq('arm_delay', $arm_delay);
                 $this->updateReponseFromApp('arm_delay', $arm_delay, $mac);
             }
             if ($doorAlarmMac->alarm_delay != $alarm_delay) {
-                $this->connectRabbitmq('arm_delay', $arm_delay);
                 $this->updateReponseFromApp('alarm_delay', $alarm_delay, $mac);
             }
             if ($doorAlarmMac->alarm_duration != $alarm_duration) {
-                $this->connectRabbitmq('alarm_duration', $alarm_duration);
                 $this->updateReponseFromApp('alarm_duration', $alarm_duration, $mac);
             }
             if ($doorAlarmMac->self_test_mode != $self_test_mode) {
-                $this->connectRabbitmq('self_test_mode', $self_test_mode);
                 $this->updateReponseFromApp('self_test_mode', $self_test_mode, $mac);
             }
             if ($doorAlarmMac->timing_arm_disarm != $timing_arm_disarm) {
-                $this->connectRabbitmq('timing_arm_disarm', $timing_arm_disarm);
                 $this->updateReponseFromApp('timing_arm_disarm', $timing_arm_disarm, $mac);
             }
 //            dd($doorAlarmMac);
@@ -172,7 +168,7 @@ class NotifyController extends Controller
         return $this->responseFormat(200, 'Success');
     }
 
-    public function connectRabbitmq($type, $data)
+    public function connectRabbitmq($type, $data, $mac)
     {
 //        $RMQHOST = '118.69.80.100';
 //        $RMQPORT = 5672;
@@ -187,7 +183,8 @@ class NotifyController extends Controller
         $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
         $channel = $connection->channel();
 
-        $channel->queue_declare('hello2', false, false, false, false);
+//        $channel->queue_declare('hello2', false, false, false, false);
+        $channel->exchange_declare('dis_arming', 'direct', false, false, false);
         $argv = [
             $type => $data,
         ];
@@ -197,7 +194,8 @@ class NotifyController extends Controller
         $msg = new AMQPMessage($argv);
 
 //        $channel->basic_publish($msg, '', 'pushReponse');
-        $channel->basic_publish($msg, '', 'hello2');
+//        $channel->basic_publish($msg, '', 'hello2');
+        $channel->basic_publish($msg, 'direct_logs', $mac);
 
         echo ' [x] Sent ', "\n";
     }
