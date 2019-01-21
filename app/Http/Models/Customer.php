@@ -29,8 +29,6 @@ class Customer extends Model
 
     public static function saveDoorAlarm(Customer $customer, DoorAlarm $doorAlarm, $deviceTokenId)
     {
-
-
         try {
             DB::beginTransaction();
             $doorAlarm->save();

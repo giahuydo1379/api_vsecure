@@ -44,7 +44,6 @@ class DoorAlarmController extends Controller
         try {
             $requestDoorAlarm = new AddDoorAlarmRequest();
             $validator = $requestDoorAlarm->checkValidate($request);
-
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
             $customer = Customer::where(['email' => $request->email, 'is_deleted' => 0])->first();
@@ -66,7 +65,7 @@ class DoorAlarmController extends Controller
                     return $this->responseFormat(422, trans('messages.fail'));
             } else {
 
-                $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id])
+                $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id, 'parent_id' => $deviceTokenId])
                     ->first();
                 if ($deviceToken)
                     return $this->responseFormat(404, trans('messages.exists', ['name' => 'device token']));
@@ -221,13 +220,13 @@ class DoorAlarmController extends Controller
             $doorAlarm = $this->checkExistDoorAlarm($request->mac);
             if (!$doorAlarm)
                 return $this->responseFormat(404, trans('messages.not_found', ['name' => 'door alarm']));
-            $deviceToken = $this->checkExistDeviceToken($customer->id, $doorAlarm->id);
-            if ($deviceToken)
-                return $this->responseFormat(404, trans('messages.exists', ['name' => 'device token']));
-            else {
-                $customer->doorAlarms()->attach($doorAlarm->id);
-                return $this->responseFormat(200, 'Success');
-            }
+//            $deviceToken = $this->checkExistDeviceToken($customer->id, $doorAlarm->id);
+            $parentDeviceTokenIds = DeviceToken::findDeviceByCustomerId($customer->id);
+//            return $this->responseFormat(200, trans('messages.fail'), $parentDeviceTokenIds->isEmpty());
+            $share = DeviceToken::deviceTokenShare($customer, $doorAlarm, $parentDeviceTokenIds);
+            if (!$share)
+                return $this->responseFormat(200, trans('messages.fail'));
+            return $this->responseFormat(200, trans('messages.success'));
 
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
