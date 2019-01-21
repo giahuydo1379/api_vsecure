@@ -170,18 +170,18 @@ class NotifyController extends Controller
 
     public function connectRabbitmq($type, $data, $mac)
     {
-//        $RMQHOST = '118.69.80.100';
-//        $RMQPORT = 5672;
-//        $RMQUSER = 'ftpuser';
-//        $RMQPASS = 'FtpFdrive@#123$';
-//
-//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
-//        $channel = $connection->channel();
+        $RMQHOST = '118.69.80.100';
+        $RMQPORT = 5672;
+        $RMQUSER = 'ftpuser';
+        $RMQPASS = 'FtpFdrive@#123$';
+
+        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
+        $channel = $connection->channel();
 
 //        $channel->queue_declare('pushReponse', false, false, false, false);
 
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
-        $channel = $connection->channel();
+//        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+//        $channel = $connection->channel();
 
 //        $channel->queue_declare('hello2', false, false, false, false);
         $channel->exchange_declare('dis_arming', 'direct', false, false, false);
