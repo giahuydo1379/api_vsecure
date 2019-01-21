@@ -10,6 +10,7 @@ namespace App\Http\Models;
 
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class DeviceToken extends Model
 {
@@ -38,4 +39,37 @@ class DeviceToken extends Model
         return $deviceTokens;
     }
 
+    /*
+     * params int $customerId
+     * return null | id device contain device token parent
+     * */
+    public static function findDeviceByCustomerId($customerId)
+    {
+        $deviceTokenIds = DeviceToken::where(['dooralarm_id' => null, 'customer_id' => $customerId, 'parent_id' => null])
+            ->pluck('id');
+        return $deviceTokenIds;
+    }
+
+    public static function deviceTokenShare(Customer $customer, DoorAlarm $doorAlarm, $parentDeviceTokenIds)
+    {
+        try {
+            DB::beginTransaction();
+            if ($parentDeviceTokenIds->isEmpty())
+                return false;
+            foreach ($parentDeviceTokenIds as $parentDeviceTokenId) {
+                $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id, 'parent_id' => $parentDeviceTokenId])
+                    ->first();
+                if ($deviceToken)
+                    return false;
+                $update = Customer::attachDoorAlarm($customer, $doorAlarm->id, $parentDeviceTokenId);
+                if (!$update)
+                    return false;
+            }
+            DB::commit();
+            return true;
+        } catch (\Exception $exception) {
+            DB::rollBack();
+            return false;
+        }
+    }
 }
