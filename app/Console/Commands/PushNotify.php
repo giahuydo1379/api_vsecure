@@ -78,18 +78,27 @@ class PushNotify extends Command
 
         $data['mac'] = $message['mac_address'];
         $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : 0;
-        $data['is_alarm'] = isset($message['alarm_door_bell']) ? $message['alarm_door_bell'] : 0;
+        $data['is_alarm'] = isset($message['alarm_doorbell']) ? $message['alarm_doorbell'] : 0;
         $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : 0;
-        $data['is_arm'] = isset($message['arming_dis_arming']) ? $message['arming_dis_arming'] : 0;
+        $data['is_arm'] = isset($message['arming_disarming']) ? $message['arming_disarming'] : 0;
         $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : 0;
-        dump($data);
+//        dump($data);
         $doorAlarm = DoorAlarm::where('mac', $data['mac'])->first();
-        dump($doorAlarm->toArray());
+//        dump($doorAlarm->toArray());
         $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
 
-        $deviceTokens = $query->pluck('device_token')->toArray();
 
-        $deviceTokenIds = $query->pluck('id')->toArray();
+        $parentId = $query->pluck('parent_id')->toArray();
+        $deviceTokens = array();
+        $deviceTokenIds = array();
+        foreach ($parentId as $id) {
+            $query = DeviceToken::where(['id' => $id, 'is_deleted' => 0]);
+            $deviceTokens[] = $query->pluck('device_token')->first();
+            $deviceTokenIds[] = $query->pluck('id')->first();
+        }
+
+        dump($deviceTokens);
+        dump($deviceTokenIds);
 
         $this->processNotifications($doorAlarm, $data, $deviceTokens, $deviceTokenIds);
 
@@ -160,13 +169,13 @@ class PushNotify extends Command
         if ($doorAlarm->is_home != $data['is_home']) {
             if ($data['is_home'] == 0) {
                 $notify = [
-                    "body" => "Chuyển trạng thái ở nhà",
-                    "title" => "Chuyển trạng thái ở nhà",
+                    "body" => $doorAlarm->name . "Chuyển trạng thái ở nhà",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái ở nhà",
                 ];
             } else {
                 $notify = [
-                    "body" => "Chuyển trạng thái đi vắng",
-                    "title" => "Chuyển trạng thái đi vắng",
+                    "body" =>  $doorAlarm->name . "Chuyển trạng thái đi vắng",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái đi vắng",
                 ];
             }
             $this->pushNotify($deviceTokens, $data, $notify);
@@ -177,13 +186,13 @@ class PushNotify extends Command
         if ($doorAlarm->is_alarm != $data['is_alarm']) {
             if ($data['is_alarm'] == 0) {
                 $notify = [
-                    "body" => "Chuyển trạng thái cảnh báo",
-                    "title" => "Chuyển trạng thái cảnh báo",
+                    "body" =>  $doorAlarm->name ."Chuyển trạng thái cảnh báo",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái cảnh báo",
                 ];
             } else {
                 $notify = [
-                    "body" => "Chuyển trạng thái chuông cửa",
-                    "title" => "Chuyển trạng thái chuông cửa",
+                    "body" =>  $doorAlarm->name ."Chuyển trạng thái chuông cửa",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái chuông cửa",
                 ];
             }
             $this->pushNotify($deviceTokens, $data, $notify);
@@ -195,29 +204,29 @@ class PushNotify extends Command
 
             if ($data['battery_capacity_reamaining'] == 0) {
                 $notify = [
-                    "body" => "Pin còn dưới 25%",
-                    "title" => "Pin còn dưới 25%",
+                    "body" =>  $doorAlarm->name ."Pin còn dưới 25%",
+                    "title" =>  $doorAlarm->name ."Pin còn dưới 25%",
                 ];
             }
 
             if ($data['battery_capacity_reamaining'] == 1) {
                 $notify = [
-                    "body" => "Pin còn dưới 50%",
-                    "title" => "Pin còn dưới 50%",
+                    "body" =>  $doorAlarm->name ."Pin còn dưới 50%",
+                    "title" =>  $doorAlarm->name ."Pin còn dưới 50%",
                 ];
             }
 
             if ($data['battery_capacity_reamaining'] == 2) {
                 $notify = [
-                    "body" => "Pin còn dưới 75%",
-                    "title" => "Pin còn dưới 75%",
+                    "body" =>  $doorAlarm->name ."Pin còn dưới 75%",
+                    "title" =>  $doorAlarm->name ."Pin còn dưới 75%",
                 ];
             }
 
             if ($data['battery_capacity_reamaining'] == 3) {
                 $notify = [
-                    "body" => "Pin còn dưới 100%",
-                    "title" => "Pin còn dưới 100%",
+                    "body" =>  $doorAlarm->name ."Pin còn dưới 100%",
+                    "title" =>  $doorAlarm->name ."Pin còn dưới 100%",
                 ];
             }
 
@@ -229,15 +238,15 @@ class PushNotify extends Command
         if ($doorAlarm->is_arm != $data['is_arm']) {
             if ($data['is_arm'] == 0) {
                 $notify = [
-                    "body" => "Chuyển trạng thái tắt cảnh báo",
-                    "title" => "Chuyển trạng thái tắt cảnh báo",
+                    "body" =>  $doorAlarm->name ."Chuyển trạng thái tắt cảnh báo",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái tắt cảnh báo",
                 ];
             }
 
             if ($data['is_arm'] == 1) {
                 $notify = [
-                    "body" => "Chuyển trạng thái bật cảnh báo",
-                    "title" => "Chuyển trạng thái bật cảnh báo",
+                    "body" =>  $doorAlarm->name ."Chuyển trạng thái bật cảnh báo",
+                    "title" =>  $doorAlarm->name ."Chuyển trạng thái bật cảnh báo",
                 ];
             }
 
@@ -249,13 +258,13 @@ class PushNotify extends Command
         if ($doorAlarm->door_status != $data['door_status']) {
             if ($data['door_status'] == 0) {
                 $notify = [
-                    "body" => "Cửa đóng",
-                    "title" => "Cửa đóng",
+                    "body" =>  $doorAlarm->name ."Cửa đóng",
+                    "title" =>  $doorAlarm->name ."Cửa đóng",
                 ];
             } else {
                 $notify = [
-                    "body" => "Cửa mở",
-                    "title" => "Cửa mở",
+                    "body" =>  $doorAlarm->name ."Cửa mở",
+                    "title" =>  $doorAlarm->name ."Cửa mở",
                 ];
             }
 
