@@ -15,7 +15,7 @@ class DeviceToken extends Model
 {
     public $table = 'device_token';
 
-    protected $fillable = ['dooralarm_id', 'customer_id', 'device_token'];
+    protected $fillable = ['dooralarm_id', 'customer_id', 'device_token', 'parent_id'];
 
     public function notifications()
     {

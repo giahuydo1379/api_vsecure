@@ -6,6 +6,7 @@ use App\Http\Models\Customer;
 use App\Http\Models\DeviceToken;
 use App\Http\Requests\Customer as CustomerRequest;
 use App\Http\Requests\DoorAlarm as DoorAlarmRequest;
+use App\Http\Requests\CustomerAddDevice as AddDoorAlarmRequest;
 use App\Http\Models\DoorAlarm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -41,8 +42,9 @@ class DoorAlarmController extends Controller
     public function store(Request $request)
     {
         try {
-            $requestDoorAlarm = new DoorAlarmRequest();
+            $requestDoorAlarm = new AddDoorAlarmRequest();
             $validator = $requestDoorAlarm->checkValidate($request);
+
             if ($validator->fails())
                 return $this->responseFormat(422, $validator->errors());
             $customer = Customer::where(['email' => $request->email, 'is_deleted' => 0])->first();
@@ -50,21 +52,31 @@ class DoorAlarmController extends Controller
                 return $this->responseFormat(404, 'Not found customer');
             $doorAlarms = $customer->doorAlarms;
             $doorAlarm = DoorAlarm::where('mac', $request->mac)->first();
+            $deviceTokenId = DeviceToken::where(['customer_id' => $customer->id,
+                'device_token' => $request->device_token])->pluck('id')->first();
+            if (!$deviceTokenId)
+                return $this->responseFormat(404, trans('messages.not_found', ['name' => 'device token']));
 
             if (!$doorAlarm) {
-                $doorAlaram = new DoorAlarm(['mac' => $request->mac]);
-                $customer->doorAlarms()->save($doorAlaram);
-                return $this->responseFormat(200, 'Success');
+                $doorAlaramNew = new DoorAlarm(['mac' => $request->mac]);
+                $insertDevice = Customer::saveDoorAlarm($customer, $doorAlaramNew, $deviceTokenId);
+                if ($insertDevice)
+                    return $this->responseFormat(200, trans('messages.success'));
+                else
+                    return $this->responseFormat(422, trans('messages.fail'));
             } else {
 
                 $deviceToken = DeviceToken::where(['customer_id' => $customer->id, 'dooralarm_id' => $doorAlarm->id])
                     ->first();
-
                 if ($deviceToken)
                     return $this->responseFormat(404, trans('messages.exists', ['name' => 'device token']));
                 else {
-                    $cus = $customer->doorAlarms()->attach($doorAlarm->id);
-                    return $this->responseFormat(200, 'Success');
+                    $update = Customer::attachDoorAlarm($customer, $doorAlarm->id, $deviceTokenId);
+
+                    if ($update)
+                        return $this->responseFormat(200, trans('messages.success'));
+                    else
+                        return $this->responseFormat(422, trans('messages.fail'));
                 }
             }
         } catch (\Exception $exception) {
