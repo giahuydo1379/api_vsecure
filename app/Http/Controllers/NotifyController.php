@@ -25,19 +25,20 @@ class NotifyController extends Controller
             return $this->responseFormat(422, $validator->errors());
         $notifications = Notifications::all();
         $notify = array();
+        $customer_id = null;
         foreach ($notifications as $notification) {
             $deviceToken = $notification->deviceToken;
 //            dump($request->device_token.'----'.$deviceToken->device_token);
             if ($deviceToken->device_token == $request->device_token) {
                 $notify['notify'][] = $notification;
                 $customer_id = $deviceToken->customer_id;
-                $customer = Customer::find($customer_id);
-//                return $this->responseFormat(200,'ss',$deviceToken);
-                $doorAlarms = $customer->doorAlarms;
-                foreach ($doorAlarms as $doorAlarm) {
-                    $notify['device'][] = $doorAlarm;
-                }
             }
+        }
+        $customer = Customer::find($customer_id);
+//                return $this->responseFormat(200,'ss',$deviceToken);
+        $doorAlarms = $customer->doorAlarms;
+        foreach ($doorAlarms as $doorAlarm) {
+            $notify['device'][] = $doorAlarm;
         }
         if (!$notify)
             return $this->responseFormat(404, trans('messages.not_found', ['name' => 'notification']));
