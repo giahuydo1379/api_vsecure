@@ -80,7 +80,7 @@ class PushNotify extends Command
         $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : 0;
         $data['is_alarm'] = isset($message['alarm_doorbell']) ? $message['alarm_doorbell'] : 0;
         $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : 0;
-        $data['is_arm'] = isset($message['arming_disarming']) ? $message['arming_disarming'] : 0;
+        $data['is_arm'] = isset($message['disarming_arming']) ? $message['disarming_arming'] : 0;
         $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : 0;
 //        dump($data);
         $doorAlarm = DoorAlarm::where('mac', $data['mac'])->first();
