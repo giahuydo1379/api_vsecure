@@ -5,10 +5,10 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use GuzzleHttp\Client as GuzzleClient;
-use App\Http\Models\DoorAlarmCustomer;
 use App\Http\Models\DoorAlarm;
 use App\Http\Models\DeviceToken;
 use DB;
+use DateTime;
 
 
 class PushNotify extends Command
@@ -45,195 +45,225 @@ class PushNotify extends Command
     public function handle()
     {
 //
-//        $RMQHOST = '118.69.80.100';
-//        $RMQPORT = 5672;
-//        $RMQUSER = 'ftpuser';
-//        $RMQPASS = 'FtpFdrive@#123$';
-//
-//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
-//        $channel = $connection->channel();
-//
-//        $channel->queue_declare('door_alarm', false, false, false, false);
+        $RMQHOST = '118.69.80.100';
+        $RMQPORT = 5672;
+        $RMQUSER = 'ftpuser';
+        $RMQPASS = 'FtpFdrive@#123$';
 
-
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
-        $channel->queue_declare('hello', false, false, false, false);
+        $channel->queue_declare('door_alarm', false, false, false, false);
+
+
+//        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+//        $channel = $connection->channel();
+//
+//        $channel->queue_declare('hello', false, false, false, false);
 
         $callback = function ($msg) {
-//            dump($msg->body);
-            $a = (strval($msg->body));
-            $argv = json_decode($a, true);
-            $address_mac = $argv['address_mac'];
-            $is_home = $argv['home_away'];
-            $is_alarm = $argv['alarm_door_bell'];
-            $battery_capacity_reamaining = $argv['battery'];
-            $is_arm = $argv['arming_dis_arming'];
-            $door_status = $argv['door_status'];
-//            dd($address_mac);
-
-//            $doorAlarmIdCustomers = DoorAlarmCustomer::where(['mac_device' => $address_mac])
-//                ->pluck('id_customer')->toArray();
-//            foreach ($doorAlarmIdCustomers as $doorAlarmIdCustomer) {
-//                $device_token[] = DeviceToken::where(['customer_id' => $doorAlarmIdCustomer, 'is_deleted' => 0])
-//                    ->pluck('device_token')->toArray();
-//            }
-
-            $doorAlarmIds = DoorAlarm::where(['mac' => $address_mac]) ->pluck('id')->toArray();
-            foreach ($doorAlarmIds as $doorAlarmId) {
-                $device_token[] = DeviceToken::where(['dooralarm_id' => $doorAlarmId, 'is_deleted' => 0])
-                    ->pluck('device_token')->toArray();
-            }
-//            $doorAlarmIdCustomers = DeviceToken::where(['dooralarm_id' => $address_mac])
-//                ->pluck('id_customer')->toArray();
-            $deviceTokens = array_flatten($device_token);
-
-            $doorAlarmMac = DoorAlarm::where('mac', $address_mac)->first();
-            $notify = [
-                "body" => "Xin chào",
-                "title" => "Xin chào",
-            ];
-            if ($doorAlarmMac->is_home != $is_home) {
-                if ($is_home == 0) {
-                    $notify = [
-                        "body" => "Chuyển trạng thái ở nhà",
-                        "title" => "Chuyển trạng thái ở nhà",
-                    ];
-                } else {
-                    $notify = [
-                        "body" => "Chuyển trạng thái đi vắng",
-                        "title" => "Chuyển trạng thái đi vắng",
-                    ];
-                }
-
-            } elseif ($doorAlarmMac->is_alarm != $is_alarm) {
-                if ($is_alarm == 0) {
-                    $notify = [
-                        "body" => "Chuyển trạng thái alarm",
-                        "title" => "Chuyển trạng thái alarm",
-                    ];
-                } else {
-                    $notify = [
-                        "body" => "Chuyển trạng thái doorbell",
-                        "title" => "Chuyển trạng thái doorbell",
-                    ];
-                }
-
-            } elseif ($doorAlarmMac->battery_capacity_reamaining != $battery_capacity_reamaining) {
-                if ($battery_capacity_reamaining == 0) {
-                    $notify = [
-                        "body" => "Pin còn dưới 25%",
-                        "title" => "Pin còn dưới 25%",
-                    ];
-                }
-                if ($battery_capacity_reamaining == 1) {
-                    $notify = [
-                        "body" => "Pin còn dưới 50%",
-                        "title" => "Pin còn dưới 50%",
-                    ];
-                }
-                if ($battery_capacity_reamaining == 2) {
-                    $notify = [
-                        "body" => "Pin còn dưới 75%",
-                        "title" => "Pin còn dưới 75%",
-                    ];
-                } else {
-                    $notify = [
-                        "body" => "Pin còn dưới 100%",
-                        "title" => "Pin còn dưới 100%",
-                    ];
-                }
-
-            } elseif ($doorAlarmMac->is_arm != $is_arm) {
-                if ($is_arm == 0) {
-                    $notify = [
-                        "body" => "Chuyển trạng thái disarm",
-                        "title" => "Chuyển trạng thái disarm",
-                    ];
-                } else {
-                    $notify = [
-                        "body" => "Chuyển trạng thái arm",
-                        "title" => "Chuyển trạng thái arm",
-                    ];
-                }
-
-
-            } elseif ($doorAlarmMac->door_status != $door_status) {
-                if ($door_status == 0) {
-                    $notify = [
-                        "body" => "Cửa đóng",
-                        "title" => "Cửa đóng",
-                    ];
-                } else {
-                    $notify = [
-                        "body" => "Cửa đóng",
-                        "title" => "Cửa đóng",
-                    ];
-                }
-            }
-
-            $doorAlarm = DoorAlarm::updateOrCreate(
-                ['mac' => $address_mac],
-                ['is_home' => $is_home,
-                    'is_alarm' => $is_alarm,
-                    'battery_capacity_reamaining' => $battery_capacity_reamaining,
-                    'is_arm' => $is_arm,
-                    'door_status' => $door_status]
-            );
-
-            $log = new Log;
-
-            $log->name = $request->name;
-
-            $flight->save();
-
-
-            $client = new GuzzleClient([
-                'base_uri' => 'https://fcm.googleapis.com/fcm/send',
-            ]);
-
-            if ($deviceTokens) {
-                foreach ($deviceTokens as $deviceToken) {
-                    $response = $client->post('', [
-                        'headers' => [
-                            'content-type' => 'application/json',
-                            'Authorization ' => 'key=AIzaSyAbztHNWF15A3PSZ4Z1Won4YHjtRjOA9_M'
-                        ],
-                        'body' => json_encode([
-                            'to' => $deviceToken,
-                            "collapse_key" => "type_a",
-                            "notification" => $notify,
-                            "data" => [
-                                'address_mac' => $argv['address_mac'],
-                                'home_away' => $is_home,
-                                'alarm_door_bell' => $is_alarm,
-                                'battery' => $battery_capacity_reamaining,
-                                'arming_dis_arming' => $is_arm,
-                                'door_status' => $door_status
-                            ],
-                        ])
-
-                    ]);
-                    $body = $response->getBody();
-                    print_r(json_decode((string)$body));
-                }
-            } else {
-                echo " [x] Not found device_token\n";
-            }
-
-            echo " [x] Done\n";
+            $this->processCallback($msg);
         };
 
-//        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
-        $channel->basic_consume('hello', '', false, true, false, false, $callback);
+        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
 
         echo " [x] Waiting...\n";
         while (count($channel->callbacks)) {
             $channel->wait();
         }
-
     }
 
+    function processCallback($msg) {
+        $message = json_decode($msg->body, true);
+
+        $data['mac'] = $message['mac_address'];
+        $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : 0;
+        $data['is_alarm'] = isset($message['alarm_door_bell']) ? $message['alarm_door_bell'] : 0;
+        $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : 0;
+        $data['is_arm'] = isset($message['arming_dis_arming']) ? $message['arming_dis_arming'] : 0;
+        $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : 0;
+        dump($data);
+        $doorAlarm = DoorAlarm::where('mac', $data['mac'])->first();
+        dump($doorAlarm->toArray());
+        $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
+
+        $deviceTokens = $query->pluck('device_token')->toArray();
+
+        $deviceTokenIds = $query->pluck('id')->toArray();
+
+        $this->processNotifications($doorAlarm, $data, $deviceTokens, $deviceTokenIds);
+
+        echo " [x] Done\n";
+    }
+
+    function updateDoorAlarm($data) {
+        $macAddress = $data['mac'];
+        unset($data['mac']);
+        return DB::table('dooralarm')
+            ->where('mac', $macAddress)
+            ->update($data);
+    }
+
+    function pushNotify($deviceTokens, $data, $notify) {
+        $client = new GuzzleClient([
+            'base_uri' => 'https://fcm.googleapis.com/fcm/send',
+        ]);
+
+        if (!empty($deviceTokens)) {
+            foreach ($deviceTokens as $deviceToken) {
+                $client->post('', [
+                    'headers' => [
+                        'content-type' => 'application/json',
+                        'Authorization ' => 'key=AIzaSyAbztHNWF15A3PSZ4Z1Won4YHjtRjOA9_M'
+                    ],
+                    'body' => json_encode([
+                        'to' => $deviceToken,
+                        "collapse_key" => "type_a",
+                        "notification" => $notify,
+                        "data" => [
+                            'address_mac' => $data['mac'],
+                            'home_away' => $data['is_home'],
+                            'alarm_door_bell' => $data['is_alarm'],
+                            'battery' => $data['battery_capacity_reamaining'],
+                            'arming_dis_arming' => $data['is_arm'],
+                            'door_status' => $data['door_status']
+                        ]
+                    ])
+
+                ]);
+//                    $body = $response->getBody();
+//                    print_r(json_decode((string)$body));
+            }
+        } else {
+            echo " [x] Not found device_token\n";
+        }
+    }
+
+    function createLog($deviceTokenIds, $notify) {
+        foreach ($deviceTokenIds as $deviceTokenId) {
+            DB::table('notifications')->insert([
+                'device_token_id' => $deviceTokenId,
+                'action' => $notify['title'],
+                'model_device' => "china",
+                'push_time' => date('Y-m-d H:i:s')
+            ]);
+        };
+    }
+
+    function processNotifications($doorAlarm, $data, $deviceTokens, $deviceTokenIds) {
+
+        $notify = [
+            "body" => "Xin chào",
+            "title" => "Xin chào",
+        ];
+
+        if ($doorAlarm->is_home != $data['is_home']) {
+            if ($data['is_home'] == 0) {
+                $notify = [
+                    "body" => "Chuyển trạng thái ở nhà",
+                    "title" => "Chuyển trạng thái ở nhà",
+                ];
+            } else {
+                $notify = [
+                    "body" => "Chuyển trạng thái đi vắng",
+                    "title" => "Chuyển trạng thái đi vắng",
+                ];
+            }
+            $this->pushNotify($deviceTokens, $data, $notify);
+            $this->createLog($deviceTokenIds, $notify);
+
+        }
+
+        if ($doorAlarm->is_alarm != $data['is_alarm']) {
+            if ($data['is_alarm'] == 0) {
+                $notify = [
+                    "body" => "Chuyển trạng thái cảnh báo",
+                    "title" => "Chuyển trạng thái cảnh báo",
+                ];
+            } else {
+                $notify = [
+                    "body" => "Chuyển trạng thái chuông cửa",
+                    "title" => "Chuyển trạng thái chuông cửa",
+                ];
+            }
+            $this->pushNotify($deviceTokens, $data, $notify);
+            $this->createLog($deviceTokenIds, $notify);
+
+        }
+
+        if ($doorAlarm->battery_capacity_reamaining != $data['battery_capacity_reamaining']) {
+
+            if ($data['battery_capacity_reamaining'] == 0) {
+                $notify = [
+                    "body" => "Pin còn dưới 25%",
+                    "title" => "Pin còn dưới 25%",
+                ];
+            }
+
+            if ($data['battery_capacity_reamaining'] == 1) {
+                $notify = [
+                    "body" => "Pin còn dưới 50%",
+                    "title" => "Pin còn dưới 50%",
+                ];
+            }
+
+            if ($data['battery_capacity_reamaining'] == 2) {
+                $notify = [
+                    "body" => "Pin còn dưới 75%",
+                    "title" => "Pin còn dưới 75%",
+                ];
+            }
+
+            if ($data['battery_capacity_reamaining'] == 3) {
+                $notify = [
+                    "body" => "Pin còn dưới 100%",
+                    "title" => "Pin còn dưới 100%",
+                ];
+            }
+
+            $this->pushNotify($deviceTokens, $data, $notify);
+            $this->createLog($deviceTokenIds, $notify);
+
+        }
+
+        if ($doorAlarm->is_arm != $data['is_arm']) {
+            if ($data['is_arm'] == 0) {
+                $notify = [
+                    "body" => "Chuyển trạng thái tắt cảnh báo",
+                    "title" => "Chuyển trạng thái tắt cảnh báo",
+                ];
+            }
+
+            if ($data['is_arm'] == 1) {
+                $notify = [
+                    "body" => "Chuyển trạng thái bật cảnh báo",
+                    "title" => "Chuyển trạng thái bật cảnh báo",
+                ];
+            }
+
+            $this->pushNotify($deviceTokens, $data, $notify);
+            $this->createLog($deviceTokenIds, $notify);
+
+        }
+
+        if ($doorAlarm->door_status != $data['door_status']) {
+            if ($data['door_status'] == 0) {
+                $notify = [
+                    "body" => "Cửa đóng",
+                    "title" => "Cửa đóng",
+                ];
+            } else {
+                $notify = [
+                    "body" => "Cửa mở",
+                    "title" => "Cửa mở",
+                ];
+            }
+
+            $this->pushNotify($deviceTokens, $data, $notify);
+            $this->createLog($deviceTokenIds, $notify);
+        }
+        // cập nhật table door_alarm sau khi gửi notify
+        $this->updateDoorAlarm($data);
+    }
 
 }
