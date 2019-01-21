@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Models\Customer;
 use App\Http\Requests\Notify;
-use App\Http\Models\Notify as Notifications;
+use App\Http\Models\Notification as Notifications;
 use Illuminate\Http\Request;
 use App\Http\Models\DoorAlarm;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -23,27 +23,25 @@ class NotifyController extends Controller
         $validator = $requestNotify->checkValidate($request);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
-//        $customer = CustomerController::checkExistCustomer($request->email);
-//        if (!$customer)
-//            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'customer']));
         $notifications = Notifications::all();
         $notify = array();
         foreach ($notifications as $notification) {
-            $notify['notify'][] = $notification;
             $deviceToken = $notification->deviceToken;
+//            dump($request->device_token.'----'.$deviceToken->device_token);
             if ($deviceToken->device_token == $request->device_token) {
-
+                $notify['notify'][] = $notification;
                 $customer_id = $deviceToken->customer_id;
                 $customer = Customer::find($customer_id);
 //                return $this->responseFormat(200,'ss',$deviceToken);
                 $doorAlarms = $customer->doorAlarms;
                 foreach ($doorAlarms as $doorAlarm) {
-                   $notify['device'][] = $doorAlarm;
+                    $notify['device'][] = $doorAlarm;
                 }
-                return $this->responseFormat(200, trans('messages.success'), $notify);
             }
         }
-        return $this->responseFormat(404, trans('messages.not_found',['name'=> 'notify']));
+        if (!$notify)
+            return $this->responseFormat(404, trans('messages.not_found', ['name' => 'notification']));
+        return $this->responseFormat(200, trans('messages.success'), $notify);
     }
 
     /**
@@ -127,8 +125,8 @@ class NotifyController extends Controller
             $doorAlarm = $model->where(['mac' => $macAddress])->first();
             unset($data['mac']);
             $doorAlarm->update($data);
-            if($doorAlarm->door_status == 1 && $doorAlarm-> is_alarm == 0){
-                $this->connectRabbitmq('is_arm',  $data['is_arm'], $macAddress);
+            if ($doorAlarm->door_status == 1 && $doorAlarm->is_alarm == 0) {
+                $this->connectRabbitmq('is_arm', $data['is_arm'], $macAddress);
             }
             return $this->responseFormat(200, 'Success');
         } catch (\Exception $exception) {

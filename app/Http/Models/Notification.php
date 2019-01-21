@@ -22,4 +22,9 @@ class Notification extends Model
         $object = self::where($data)->first();
         return $object ? $object : new self();
     }
+
+    public function deviceToken()
+    {
+        return $this->belongsTo(DeviceToken::class, 'device_token_id');
+    }
 }
