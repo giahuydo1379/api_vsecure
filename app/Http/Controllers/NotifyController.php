@@ -118,41 +118,18 @@ class NotifyController extends Controller
 
     public function receiveReponseFromApp(Request $request)
     {
+
+
         try {
-            $mac = $request->mac;
-            $is_arm = $request->is_arm;
-            $volume = $request->volume;
-            $arm_delay = $request->arm_delay;
-            $alarm_delay = $request->alarm_delay;
-            $alarm_duration = $request->alarm_duration;
-            $self_test_mode = $request->self_test_mode;
-            $timing_arm_disarm = $request->timing_arm_disarm;
-            $doorAlarmMac = DoorAlarm::where('mac', $mac)->first();
-            if($doorAlarmMac->door_status == 1 && $doorAlarmMac-> is_alarm == 0){
-                $this->connectRabbitmq('is_arm', $is_arm, $mac);
+            $model = new DoorAlarm();
+            $data = $request->all();
+            $macAddress = $data['mac'];
+            $doorAlarm = $model->where(['mac' => $macAddress])->first();
+            unset($data['mac']);
+            $doorAlarm->update($data);
+            if($doorAlarm->door_status == 1 && $doorAlarm-> is_alarm == 0){
+                $this->connectRabbitmq('is_arm',  $data['is_arm'], $macAddress);
             }
-            if ($doorAlarmMac->is_arm != $is_arm) {
-                $this->updateReponseFromApp('is_arm', $is_arm, $mac);
-            }
-            if ($doorAlarmMac->volume != $volume) {
-                $this->updateReponseFromApp('volume', $volume, $mac);
-            }
-            if ($doorAlarmMac->arm_delay != $arm_delay) {
-                $this->updateReponseFromApp('arm_delay', $arm_delay, $mac);
-            }
-            if ($doorAlarmMac->alarm_delay != $alarm_delay) {
-                $this->updateReponseFromApp('alarm_delay', $alarm_delay, $mac);
-            }
-            if ($doorAlarmMac->alarm_duration != $alarm_duration) {
-                $this->updateReponseFromApp('alarm_duration', $alarm_duration, $mac);
-            }
-            if ($doorAlarmMac->self_test_mode != $self_test_mode) {
-                $this->updateReponseFromApp('self_test_mode', $self_test_mode, $mac);
-            }
-            if ($doorAlarmMac->timing_arm_disarm != $timing_arm_disarm) {
-                $this->updateReponseFromApp('timing_arm_disarm', $timing_arm_disarm, $mac);
-            }
-//            dd($doorAlarmMac);
             return $this->responseFormat(200, 'Success');
         } catch (\Exception $exception) {
             return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
