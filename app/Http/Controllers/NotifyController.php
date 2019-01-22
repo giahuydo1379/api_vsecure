@@ -174,6 +174,8 @@ class NotifyController extends Controller
         $channel->basic_publish($msg, 'dis_arming', $mac);
 
         echo ' [x] Sent ', "\n";
+        $channel->close();
+        $connection->close();
     }
 
 
