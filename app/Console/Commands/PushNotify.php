@@ -45,27 +45,29 @@ class PushNotify extends Command
     public function handle()
     {
 //
-        $RMQHOST = '118.69.80.100';
-        $RMQPORT = 5672;
-        $RMQUSER = 'ftpuser';
-        $RMQPASS = 'FtpFdrive@#123$';
-
-        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
-        $channel = $connection->channel();
-
-        $channel->queue_declare('door_alarm', false, false, false, false);
-
-
-//        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+//        $RMQHOST = '118.69.80.100';
+//        $RMQPORT = 5672;
+//        $RMQUSER = 'ftpuser';
+//        $RMQPASS = 'FtpFdrive@#123$';
+//
+//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
 //        $channel = $connection->channel();
 //
-//        $channel->queue_declare('hello', false, false, false, false);
+//        $channel->queue_declare('door_alarm', false, false, false, false);
+
+
+        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $channel = $connection->channel();
+
+        $channel->queue_declare('hello', false, false, false, false);
+
 
         $callback = function ($msg) {
             $this->processCallback($msg);
         };
 
-        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
+//        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
+        $channel->basic_consume('hello', '', false, true, false, false, $callback);
 
         echo " [x] Waiting...\n";
         while (count($channel->callbacks)) {
@@ -75,17 +77,18 @@ class PushNotify extends Command
 
     function processCallback($msg) {
         $message = json_decode($msg->body, true);
-
+        $doorAlarm = DoorAlarm::where('mac', $message['mac_address'])->first();
+        $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
+//        dd($doorAlarm->is_arm);
         $data['mac'] = $message['mac_address'];
         $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : 0;
         $data['is_alarm'] = isset($message['alarm_doorbell']) ? $message['alarm_doorbell'] : 0;
         $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : 0;
-        $data['is_arm'] = isset($message['disarming_arming']) ? $message['disarming_arming'] : 0;
+        $data['is_arm'] = isset($message['disarming_arming']) ? $message['disarming_arming'] : $doorAlarm->is_arm;
         $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : 0;
 //        dump($data);
-        $doorAlarm = DoorAlarm::where('mac', $data['mac'])->first();
+
 //        dump($doorAlarm->toArray());
-        $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
 
 
         $parentId = $query->pluck('parent_id')->toArray();

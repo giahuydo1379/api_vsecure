@@ -55,7 +55,7 @@ class PushNotifyExample extends Command
         $channel->queue_declare('hello', false, false, false, false);
 
         $argv = [
-            'address_mac' => "DC4F228ABB6F",
+            'mac_address' => "dc4f228aba7b",
             'home_away' => 0,
             'alarm_doorbell' => 0,
             'battery' => 3,
