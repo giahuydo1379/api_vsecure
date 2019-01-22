@@ -15,6 +15,14 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+
+    'rmqhost' => env('RMQHOST', 'localhost'),
+    'rmqport' => env('RMQPORT', '5672'),
+    'rmquser' => env('RMQUSER', 'guest'),
+    'rmqpass' => env('RMQPASS', 'guest'),
+    'queuename' => env('QUEUENAME', 'hello'),
+
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
