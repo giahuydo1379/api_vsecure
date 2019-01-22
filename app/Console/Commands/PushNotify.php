@@ -81,11 +81,11 @@ class PushNotify extends Command
         $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
 //        dd($doorAlarm->is_arm);
         $data['mac'] = $message['mac_address'];
-        $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : 0;
-        $data['is_alarm'] = isset($message['alarm_doorbell']) ? $message['alarm_doorbell'] : 0;
-        $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : 0;
+        $data['is_home'] = isset($message['home_away']) ? $message['home_away'] : $doorAlarm->is_home;
+        $data['is_alarm'] = isset($message['alarm_doorbell']) ? $message['alarm_doorbell'] : $doorAlarm->is_alarm;
+        $data['battery_capacity_reamaining'] = isset($message['battery']) ? $message['battery'] : $doorAlarm->battery_capacity_reamaining;
         $data['is_arm'] = isset($message['disarming_arming']) ? $message['disarming_arming'] : $doorAlarm->is_arm;
-        $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : 0;
+        $data['door_status'] = isset($message['door_status']) ? $message['door_status'] : $doorAlarm->door_status;
 //        dump($data);
 
 //        dump($doorAlarm->toArray());
