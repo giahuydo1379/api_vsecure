@@ -45,29 +45,29 @@ class PushNotify extends Command
     public function handle()
     {
 //
-//        $RMQHOST = '118.69.80.100';
-//        $RMQPORT = 5672;
-//        $RMQUSER = 'ftpuser';
-//        $RMQPASS = 'FtpFdrive@#123$';
-//
-//        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
-//        $channel = $connection->channel();
-//
-//        $channel->queue_declare('door_alarm', false, false, false, false);
+        $RMQHOST = '118.69.80.100';
+        $RMQPORT = 5672;
+        $RMQUSER = 'ftpuser';
+        $RMQPASS = 'FtpFdrive@#123$';
 
-
-        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+        $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
-        $channel->queue_declare('hello', false, false, false, false);
+        $channel->queue_declare('door_alarm', false, false, false, false);
+
+
+//        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
+//        $channel = $connection->channel();
+
+//        $channel->queue_declare('hello', false, false, false, false);
 
 
         $callback = function ($msg) {
             $this->processCallback($msg);
         };
 
-//        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
-        $channel->basic_consume('hello', '', false, true, false, false, $callback);
+        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
+//        $channel->basic_consume('hello', '', false, true, false, false, $callback);
 
         echo " [x] Waiting...\n";
         while (count($channel->callbacks)) {
