@@ -187,15 +187,19 @@ class CustomerController extends Controller
     public function update(Request $request)
     {
         $email = $request->email;
+
         $requestCus = new CustomerRequest();
         $validator = $requestCus->checkValidate($request);
         if ($validator->fails())
             return $this->responseFormat(422, $validator->errors());
         $customer = Customer::where(['email' => $email, 'is_deleted' => 0])->first();
-        $info = $request->only('nick_name', 'password');
-        if ($request->password)
-            $info['password'] = bcrypt($info['password']);
-        $customer->fill($info);
+//        $info = $request->only('nick_name', 'password');
+        $nick_name = $request->nick_name;
+        $password = $request->password;
+        if ($nick_name)
+            $customer->nick_name = $nick_name;
+        if ($password)
+            $customer->password = bcrypt($password);
         if (!$customer->save())
             return $this->responseFormat(422, 'Failed');
         return $this->responseFormat(200, 'Success', $customer);
