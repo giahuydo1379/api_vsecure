@@ -45,15 +45,25 @@ class PushNotify extends Command
     public function handle()
     {
 //
+//        $RMQHOST = config('app.rmqhost');
+//        $RMQPORT = config('app.rmqport');
+//        $RMQUSER = config('app.rmquser');
+//        $RMQPASS = config('app.rmqpass');
+//        $QUEUENAME = config('app.queuename');
+
         $RMQHOST = '118.69.80.100';
         $RMQPORT = 5672;
         $RMQUSER = 'ftpuser';
         $RMQPASS = 'FtpFdrive@#123$';
+          $QUEUENAME = 'door_alarm';
+
+
+
 
         $connection = new AMQPStreamConnection($RMQHOST, $RMQPORT, $RMQUSER, $RMQPASS);
         $channel = $connection->channel();
 
-        $channel->queue_declare('door_alarm', false, false, false, false);
+        $channel->queue_declare($QUEUENAME, false, false, false, false);
 
 
 //        $connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
@@ -66,7 +76,7 @@ class PushNotify extends Command
             $this->processCallback($msg);
         };
 
-        $channel->basic_consume('door_alarm', '', false, true, false, false, $callback);
+        $channel->basic_consume($QUEUENAME, '', false, true, false, false, $callback);
 //        $channel->basic_consume('hello', '', false, true, false, false, $callback);
 
         echo " [x] Waiting...\n";
@@ -76,6 +86,7 @@ class PushNotify extends Command
     }
 
     function processCallback($msg) {
+        try {
         $message = json_decode($msg->body, true);
         $doorAlarm = DoorAlarm::where('mac', $message['mac_address'])->first();
         $query = DeviceToken::where(['dooralarm_id' => $doorAlarm->id, 'is_deleted' => 0]);
@@ -106,6 +117,9 @@ class PushNotify extends Command
         $this->processNotifications($doorAlarm, $data, $deviceTokens, $deviceTokenIds);
 
         echo " [x] Done\n";
+        } catch (\Exception $exception) {
+            return $this->responseFormat(500, 'Service Error' . $exception->getMessage());
+        }
     }
 
     function updateDoorAlarm($data) {
